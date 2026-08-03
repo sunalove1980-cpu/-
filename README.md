@@ -80,6 +80,17 @@ Build command는 `npm run build`, Publish directory는 `dist`로 설정하면 �
 > ⚠️ PWA는 **HTTPS 주소**에서만 정상적으로 설치/오프라인 동작합니다. Vercel/Netlify는 기본적으로
 > HTTPS를 제공하므로 별도 설정이 필요 없습니다.
 
+### GitHub Pages로 배포하기 (별도 계정 가입 없이 가능)
+
+이 저장소에는 `.github/workflows/deploy-pages.yml`이 이미 포함되어 있어서, 코드를 푸시하면
+자동으로 빌드해 GitHub Pages에 배포합니다. 처음 한 번만 아래 설정이 필요합니다.
+
+1. 깃허브 저장소 페이지에서 **Settings → Pages**로 이동합니다.
+2. "Build and deployment" 항목의 **Source**를 **GitHub Actions**로 선택합니다.
+3. 저장소의 **Actions** 탭에서 "Deploy to GitHub Pages" 워크플로가 자동으로 실행되는지 확인합니다
+   (실행되지 않으면 "Run workflow" 버튼으로 수동 실행할 수 있습니다).
+4. 완료되면 `https://내계정.github.io/저장소이름/` 주소로 접속할 수 있습니다.
+
 ## 4. 휴대전화에 앱처럼 설치하는 방법
 
 배포된 주소(https://로 시작하는 링크)를 휴대전화 브라우저로 열고 진행하세요.
