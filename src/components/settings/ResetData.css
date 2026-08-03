@@ -1,0 +1,20 @@
+.reset-data {
+  margin-bottom: 24px;
+}
+
+.reset-data__desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.reset-data__btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+  font-weight: 700;
+}

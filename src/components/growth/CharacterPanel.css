@@ -1,0 +1,104 @@
+.character-panel {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 24px 20px;
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.character-panel__avatar {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: var(--color-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-pop);
+  animation: character-float 3.5s ease-in-out infinite;
+}
+
+.character-panel__emoji {
+  font-size: 44px;
+}
+
+.character-panel__level-ring {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-bg-elevated);
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 2px solid var(--color-primary);
+  white-space: nowrap;
+}
+
+.character-panel__stage {
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 16px;
+  margin-top: 6px;
+}
+
+.character-panel__xp-bar {
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--color-surface-alt);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.character-panel__xp-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-xp), #fbbf24);
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.character-panel__xp-label {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.character-panel__stats {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-top: 18px;
+}
+
+.character-panel__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  gap: 2px;
+}
+
+.character-panel__stat strong {
+  font-size: 18px;
+  color: var(--color-text);
+}
+
+@keyframes character-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .character-panel__avatar {
+    animation: none;
+  }
+}

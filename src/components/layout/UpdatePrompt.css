@@ -1,0 +1,38 @@
+.update-prompt {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--nav-height) + var(--safe-bottom) + 14px);
+  z-index: 65;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  font-size: 13px;
+  max-width: min(92vw, 380px);
+}
+
+.update-prompt__cta {
+  background: var(--color-gradient);
+  color: #fff;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.update-prompt__close {
+  color: var(--color-text-faint);
+  margin-left: auto;
+}
+
+@media (min-width: 900px) {
+  .update-prompt {
+    bottom: 24px;
+  }
+}

@@ -1,0 +1,76 @@
+.monthly-calendar {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.monthly-calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.monthly-calendar__header h2 {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.monthly-calendar__header button {
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  font-size: 20px;
+  border-radius: 50%;
+  color: var(--color-primary);
+  background: var(--color-surface-alt);
+}
+
+.monthly-calendar__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 11px;
+  color: var(--color-text-faint);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.monthly-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.monthly-calendar__cell {
+  aspect-ratio: 1;
+  min-height: 0;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text);
+  background: var(--color-surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.monthly-calendar__cell:disabled {
+  opacity: 0.35;
+}
+
+.monthly-calendar__cell--blank {
+  background: transparent;
+}
+
+.monthly-calendar__cell--today {
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+}
+
+.monthly-calendar__cell--selected {
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+  transform: scale(1.05);
+}

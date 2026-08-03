@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6D28D9"/>
+      <stop offset="55%" stop-color="#4C1D95"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#DCE6FF"/>
+    </linearGradient>
+    <linearGradient id="bolt" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="35%" cy="25%" r="60%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- background -->
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <rect width="512" height="512" fill="url(#glow)"/>
+
+  <!-- shield -->
+  <path d="M256 96
+           L354 132
+           C354 132 356 268 256 336
+           C156 268 158 132 158 132
+           Z"
+        fill="url(#shield)" stroke="#FFFFFF" stroke-width="4" stroke-opacity="0.5"/>
+
+  <!-- heart cut inside shield -->
+  <path d="M256 232
+           C256 202 228 186 208 200
+           C190 213 190 238 208 256
+           L256 300
+           L304 256
+           C322 238 322 213 304 200
+           C284 186 256 202 256 232 Z"
+        fill="#312E81" opacity="0.14"/>
+
+  <!-- lightning bolt (energy) through heart -->
+  <path d="M270 176 L214 244 L244 244 L232 300 L296 226 L262 226 Z"
+        fill="url(#bolt)" stroke="#B45309" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- small sparkle star accent -->
+  <path d="M362 158 L368 174 L384 180 L368 186 L362 202 L356 186 L340 180 L356 174 Z" fill="#FFFFFF" opacity="0.9"/>
+</svg>

@@ -1,0 +1,192 @@
+/* ------------------------------------------------------------------
+   전역 테마 변수 & 리셋
+   :root 은 라이트 모드 기본값이며, [data-theme="dark"] 에서 덮어쓴다.
+   AppContext가 사용자의 설정(system/light/dark)에 따라 html[data-theme]을 갱신한다.
+-------------------------------------------------------------------*/
+:root {
+  color-scheme: light;
+
+  --color-bg: #f4f2ff;
+  --color-bg-elevated: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f0edff;
+  --color-border: #e3defc;
+
+  --color-text: #211a3d;
+  --color-text-muted: #6b6486;
+  --color-text-faint: #9993b3;
+
+  --color-primary: #7c3aed;
+  --color-primary-dark: #5b21b6;
+  --color-accent: #2563eb;
+  --color-gradient: linear-gradient(135deg, #7c3aed 0%, #6d28d9 45%, #2563eb 100%);
+  --color-gradient-soft: linear-gradient(135deg, rgba(124, 58, 237, 0.14), rgba(37, 99, 235, 0.14));
+
+  --color-xp: #f59e0b;
+  --color-coin: #eab308;
+  --color-success: #16a34a;
+  --color-danger: #dc2626;
+  --color-boss: #dc2626;
+
+  --shadow-card: 0 10px 30px -12px rgba(76, 29, 149, 0.25);
+  --shadow-pop: 0 18px 40px -14px rgba(37, 99, 235, 0.35);
+
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+
+  --nav-height: 72px;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-bg: #14102b;
+  --color-bg-elevated: #1c1740;
+  --color-surface: #1f1a45;
+  --color-surface-alt: #241d52;
+  --color-border: #362a6e;
+
+  --color-text: #f1edff;
+  --color-text-muted: #b6adde;
+  --color-text-faint: #837bb0;
+
+  --color-primary: #a78bfa;
+  --color-primary-dark: #8b5cf6;
+  --color-accent: #60a5fa;
+  --color-gradient: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 45%, #2563eb 100%);
+  --color-gradient-soft: linear-gradient(135deg, rgba(139, 92, 246, 0.22), rgba(96, 165, 250, 0.2));
+
+  --shadow-card: 0 10px 30px -12px rgba(0, 0, 0, 0.55);
+  --shadow-pop: 0 18px 40px -14px rgba(0, 0, 0, 0.6);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+h1, h2, h3, h4, p {
+  margin: 0;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  touch-action: manipulation;
+}
+
+a {
+  color: inherit;
+}
+
+/* 접근성: 키보드 포커스는 항상 명확하게 보이도록 */
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* 모바일에서 버튼/체크영역이 너무 작지 않도록 최소 터치 타겟 보장 */
+button, .tap-target, input[type='checkbox'] {
+  min-height: 44px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 8px;
+}
+
+.app-loading {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  text-align: center;
+  color: var(--color-text-muted);
+  background: var(--color-gradient);
+  color: #ffffff;
+}
+
+.app-loading__spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  animation: spin 0.8s linear infinite;
+}
+
+.app-loading--error {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.app-loading__detail {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.app-loading--error button {
+  background: var(--color-gradient);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text);
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

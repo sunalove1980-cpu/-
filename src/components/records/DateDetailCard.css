@@ -1,0 +1,72 @@
+.date-detail {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.date-detail__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.date-detail__header h2 {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.date-detail__score {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: var(--color-gradient-soft);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.date-detail__empty {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  padding: 12px 0;
+}
+
+.date-detail__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.date-detail__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+}
+
+.date-detail__item--done {
+  color: var(--color-text);
+  background: var(--color-gradient-soft);
+}
+
+.date-detail__name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.date-detail__value {
+  font-size: 12px;
+  font-weight: 700;
+  max-width: 55%;
+  text-align: right;
+  overflow-wrap: anywhere;
+}

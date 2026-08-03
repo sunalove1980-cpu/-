@@ -1,0 +1,27 @@
+// 아이콘 소스 SVG를 필요한 크기의 PNG/파비콘으로 일괄 변환하는 1회성 빌드 스크립트
+import sharp from 'sharp';
+import { mkdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+const outDir = fileURLToPath(new URL('../public/icons/', import.meta.url));
+mkdirSync(outDir, { recursive: true });
+
+const jobs = [
+  { src: 'icon-source.svg', out: 'icon-192.png', size: 192 },
+  { src: 'icon-source.svg', out: 'icon-512.png', size: 512 },
+  { src: 'icon-source.svg', out: 'apple-touch-icon.png', size: 180 },
+  { src: 'icon-source.svg', out: 'favicon-32.png', size: 32 },
+  { src: 'icon-source.svg', out: 'favicon-16.png', size: 16 },
+  { src: 'icon-maskable-source.svg', out: 'maskable-192.png', size: 192 },
+  { src: 'icon-maskable-source.svg', out: 'maskable-512.png', size: 512 },
+];
+
+for (const job of jobs) {
+  const srcPath = fileURLToPath(new URL(job.src, import.meta.url));
+  const outPath = outDir + job.out;
+  await sharp(srcPath, { density: 384 })
+    .resize(job.size, job.size)
+    .png()
+    .toFile(outPath);
+  console.log('generated', job.out);
+}

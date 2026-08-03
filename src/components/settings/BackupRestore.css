@@ -1,0 +1,40 @@
+.backup-restore {
+  margin-bottom: 24px;
+}
+
+.backup-restore__desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.backup-restore__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.backup-restore__btn {
+  flex: 1;
+  min-width: 140px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-gradient);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.backup-restore__btn--outline {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.backup-restore__error {
+  margin-top: 10px;
+  color: var(--color-danger);
+  font-size: 13px;
+  font-weight: 600;
+}
