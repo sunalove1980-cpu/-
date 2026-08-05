@@ -2,7 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [claude/health-quest-webapp-vnf6aq]
+    branches:
+      - claude/health-quest-webapp-vnf6aq
+      - claude/lecture-realtime-sharing-web-5jnj58
   workflow_dispatch:
 
 permissions:
@@ -23,10 +25,24 @@ jobs:
         with:
           node-version: 20
           cache: npm
+
+      # 1) 건강 퀘스트 앱 → 사이트 루트(/-/)
       - run: npm ci
       - run: npm run build
         env:
           DEPLOY_TARGET: gh-pages
+
+      # 2) 강의 라이브 보드 → /-/live/ 하위 경로
+      - run: npm ci
+        working-directory: lecture-live
+      - run: npm run build
+        working-directory: lecture-live
+        env:
+          DEPLOY_TARGET: gh-pages
+      - run: |
+          mkdir -p dist/live
+          cp -r lecture-live/dist/. dist/live/
+
       - uses: actions/configure-pages@v5
         with:
           # 저장소에 Pages가 아직 활성화되어 있지 않으면 이 액션이 자동으로 활성화한다.
