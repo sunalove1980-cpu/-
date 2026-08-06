@@ -180,6 +180,18 @@ export default function ScreenPage({ sessionId }) {
                       </span>
                     )}
                   </div>
+
+                  {replyCount > 0 && (
+                    <ul className="msg-replies">
+                      {repliesByParent.get(m.id).map((r) => (
+                        <li key={r.id} className="msg-reply">
+                          <span className="msg-dot" style={{ background: colorForName(r.name) }} />
+                          <span className="msg-reply-name">{r.name}</span>
+                          <span className="msg-reply-text">{r.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </li>
               );
             })}
