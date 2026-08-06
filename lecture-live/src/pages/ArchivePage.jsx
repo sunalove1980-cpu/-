@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { ArrowLeft, Download, FileSpreadsheet } from 'lucide-react';
 import { fetchAllGroupedByDate } from '../lib/messages';
 import { formatDateKey, formatTime } from '../lib/dates';
 import { colorForName } from '../lib/colors';
@@ -57,8 +58,8 @@ export default function ArchivePage() {
   return (
     <div className="archive">
       <header className="archive-header">
-        <a href="#/">← 처음으로</a>
-        <h1>📚 지난 기록</h1>
+        <a href="#/"><ArrowLeft size={14} strokeWidth={2} /> 처음으로</a>
+        <h1>지난 기록</h1>
       </header>
 
       {error && <p className="error-banner">불러오기 실패: {error}</p>}
@@ -90,15 +91,22 @@ export default function ArchivePage() {
                 <div className="archive-toolbar">
                   <h2>{formatDateKey(selected)}</h2>
                   <div className="archive-actions">
-                    <button type="button" onClick={downloadTxt}>⬇️ TXT 저장</button>
-                    <button type="button" onClick={downloadCsv}>⬇️ CSV 저장</button>
+                    <button type="button" onClick={downloadTxt}>
+                      <Download size={14} strokeWidth={2} /> TXT
+                    </button>
+                    <button type="button" onClick={downloadCsv}>
+                      <FileSpreadsheet size={14} strokeWidth={2} /> CSV
+                    </button>
                   </div>
                 </div>
                 <ul className="archive-list">
                   {messages.map((m) => (
-                    <li key={m.id} className="feed-item" style={{ '--accent': colorForName(m.name) }}>
-                      <span className="feed-name">{m.name}</span>
-                      <span className="feed-time">{formatTime(m.createdAt)}</span>
+                    <li key={m.id} className="feed-item">
+                      <div className="feed-head">
+                        <span className="msg-dot" style={{ background: colorForName(m.name) }} />
+                        <span className="feed-name">{m.name}</span>
+                        <span className="feed-time">{formatTime(m.createdAt)}</span>
+                      </div>
                       <p className="feed-text">{m.text}</p>
                     </li>
                   ))}

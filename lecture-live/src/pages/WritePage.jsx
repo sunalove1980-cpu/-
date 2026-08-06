@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { CheckCircle2, Send } from 'lucide-react';
 import { postMessage, subscribeToDate } from '../lib/messages';
 import { formatDateKey, formatTime, todayKey } from '../lib/dates';
 import { colorForName } from '../lib/colors';
@@ -45,7 +46,7 @@ export default function WritePage() {
   return (
     <div className="write">
       <header className="write-header">
-        <h1>✍️ 글 남기기</h1>
+        <h1>글 남기기</h1>
         <p>{formatDateKey(date)}</p>
       </header>
 
@@ -74,13 +75,21 @@ export default function WritePage() {
         />
         <div className="write-meta">
           <span>{text.length} / {MAX_LEN}</span>
-          {sent && <span className="write-sent">✅ 화면에 표시됐어요!</span>}
+          {sent && (
+            <span className="write-sent">
+              <CheckCircle2 size={14} strokeWidth={2} /> 화면에 표시됐어요
+            </span>
+          )}
         </div>
 
         {error && <p className="error-banner">{error}</p>}
 
         <button className="write-submit" type="submit" disabled={!text.trim() || sending}>
-          {sending ? '보내는 중…' : '보내기 🚀'}
+          {sending ? '보내는 중…' : (
+            <>
+              <Send size={16} strokeWidth={2} /> 보내기
+            </>
+          )}
         </button>
       </form>
 
@@ -88,9 +97,12 @@ export default function WritePage() {
         <h2>오늘 올라온 글 ({messages.length})</h2>
         <ul>
           {[...messages].reverse().map((m) => (
-            <li key={m.id} className="feed-item" style={{ '--accent': colorForName(m.name) }}>
-              <span className="feed-name">{m.name}</span>
-              <span className="feed-time">{formatTime(m.createdAt)}</span>
+            <li key={m.id} className="feed-item">
+              <div className="feed-head">
+                <span className="msg-dot" style={{ background: colorForName(m.name) }} />
+                <span className="feed-name">{m.name}</span>
+                <span className="feed-time">{formatTime(m.createdAt)}</span>
+              </div>
               <p className="feed-text">{m.text}</p>
             </li>
           ))}

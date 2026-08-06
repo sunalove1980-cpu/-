@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import { Archive, ArrowLeft, MessageSquare, Radio, Trash2, Users } from 'lucide-react';
 import { subscribeToDate, deleteMessage } from '../lib/messages';
 import { formatDateKey, formatTime, todayKey } from '../lib/dates';
 import { colorForName } from '../lib/colors';
@@ -52,36 +53,45 @@ export default function ScreenPage() {
   return (
     <div className="screen">
       <aside className="screen-side">
-        <a className="screen-home" href="#/">← 처음으로</a>
-        <h1 className="screen-title">강의 라이브 보드</h1>
-        <p className="screen-date">{formatDateKey(date)}</p>
+        <a className="screen-home" href="#/">
+          <ArrowLeft size={14} strokeWidth={2} /> 처음으로
+        </a>
+        <div className="screen-brand">
+          <Radio className="icon" size={20} strokeWidth={1.75} />
+          <div>
+            <div className="screen-title">강의 라이브 보드</div>
+            <div className="screen-date">{formatDateKey(date)}</div>
+          </div>
+        </div>
         <div className="screen-qr">
-          <QRCodeSVG value={writeUrl} size={220} marginSize={2} />
+          <QRCodeSVG value={writeUrl} size={200} marginSize={2} />
         </div>
         <p className="screen-qr-label">
-          휴대폰 카메라로 QR을 찍고
-          <br />
-          <strong>이름과 글을 남겨주세요!</strong>
+          휴대폰 카메라로 QR을 찍고 <strong>이름과 글을 남겨주세요</strong>
         </p>
         <p className="screen-url">{writeUrl}</p>
-        <p className="screen-count">
-          💬 오늘의 글 <strong>{messages.length}</strong>개
-        </p>
-        <a className="screen-archive" href="#/archive">📚 지난 기록</a>
+        <div className="screen-stats">
+          <MessageSquare size={16} strokeWidth={2} />
+          오늘의 글 <strong>{messages.length}</strong>개
+        </div>
+        <a className="screen-archive" href="#/archive">
+          <Archive size={14} strokeWidth={2} /> 지난 기록
+        </a>
       </aside>
 
       <main className="screen-main" ref={listRef}>
         {error && <p className="error-banner">연결 오류: {error}</p>}
         {messages.length === 0 && !error ? (
           <div className="screen-empty">
-            <p aria-hidden="true">🕊️</p>
-            <p>아직 글이 없습니다. 첫 번째 글을 기다리는 중…</p>
+            <Users size={40} strokeWidth={1.5} />
+            <p>아직 글이 없습니다. 첫 번째 글을 기다리는 중</p>
           </div>
         ) : (
           <ul className="screen-grid">
             {messages.map((m) => (
-              <li key={m.id} className="msg-card" style={{ '--accent': colorForName(m.name) }}>
+              <li key={m.id} className="msg-card">
                 <div className="msg-head">
+                  <span className="msg-dot" style={{ background: colorForName(m.name) }} />
                   <span className="msg-name">{m.name}</span>
                   <span className="msg-time">{formatTime(m.createdAt)}</span>
                   <button
@@ -90,7 +100,7 @@ export default function ScreenPage() {
                     title="이 글 삭제"
                     onClick={() => handleDelete(m.id)}
                   >
-                    ✕
+                    <Trash2 size={14} strokeWidth={2} />
                   </button>
                 </div>
                 <p className="msg-text">{m.text}</p>
