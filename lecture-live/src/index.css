@@ -56,68 +56,47 @@ input, textarea { font: inherit; color: inherit; }
 /* ── 홈 ─────────────────────────────────────────────── */
 .home {
   min-height: 100%;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  background:
-    radial-gradient(circle at 15% 0%, #eef2fb 0%, transparent 45%),
-    var(--bg);
-}
-
-.home-card {
-  width: min(520px, 100%);
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 40px 36px;
-  box-shadow: var(--shadow-lg);
 }
 
-.home-mark {
-  display: inline-flex;
+.home-topbar {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
-  background: var(--ink);
-  color: #fff;
-  margin-bottom: 20px;
+  gap: 10px;
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--border);
 }
+.home-topbar-mark { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.home-topbar-name { font-weight: 700; font-size: 0.92rem; letter-spacing: -0.01em; }
 
-.home-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
-.home-date {
-  color: var(--ink-soft);
-  font-weight: 600;
-  font-size: 0.875rem;
-  margin-top: 4px;
+.home-body { max-width: 640px; margin: 0 auto; padding: 56px 32px 80px; }
+
+.home-eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
 }
-.home-desc { color: var(--ink-soft); margin: 16px 0 28px; font-size: 0.95rem; }
+.home-heading { font-size: 1.55rem; font-weight: 700; letter-spacing: -0.02em; margin-top: 8px; }
+.home-desc { color: var(--ink-soft); margin-top: 10px; font-size: 0.95rem; max-width: 46ch; }
 
-.home-nav { display: grid; gap: 10px; }
+.home-list { margin-top: 40px; border-top: 1px solid var(--border); }
 
-.home-btn {
+.home-row {
   display: flex;
   align-items: center;
   gap: 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: border-color 0.12s, background 0.12s;
-  background: var(--surface);
+  padding: 18px 6px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
 }
-.home-btn .icon { color: var(--ink-soft); }
-.home-btn-body { display: flex; flex-direction: column; gap: 2px; text-align: left; }
-.home-btn small { font-weight: 400; font-size: 0.8rem; color: var(--ink-soft); }
-.home-btn:hover { border-color: var(--border-strong); background: #fafbfc; }
-.home-btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
-.home-btn.primary .icon { color: #cbd5e1; }
-.home-btn.primary small { color: #94a3b8; }
-.home-btn.primary:hover { background: #1e293b; }
+.home-row:hover { background: var(--bg); }
+.home-row .icon { color: var(--ink-soft); }
+.home-row-body { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.home-row-title { font-weight: 600; font-size: 0.98rem; }
+.home-row-desc { font-size: 0.83rem; color: var(--ink-soft); }
+.home-row-chevron { color: var(--ink-faint); }
 
 /* ── 발표 화면 ───────────────────────────────────────── */
 .screen {

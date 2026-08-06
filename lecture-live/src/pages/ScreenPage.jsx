@@ -67,9 +67,9 @@ export default function ScreenPage() {
           <QRCodeSVG value={writeUrl} size={200} marginSize={2} />
         </div>
         <p className="screen-qr-label">
-          휴대폰 카메라로 QR을 찍고
+          그리고 휴대폰 카메라로 QR을 찍고
           <br />
-          <strong>이름과 글을 남겨주세요</strong>
+          <strong>이름과 글을 남겨주세요.</strong>
         </p>
         <p className="screen-url">{writeUrl}</p>
         <div className="screen-stats">
