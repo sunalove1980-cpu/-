@@ -10,12 +10,12 @@
 // 값이 채워지기 전에는 앱이 설정 안내 화면을 보여준다.
 // ─────────────────────────────────────────────────────────────
 export const firebaseConfig = {
-  apiKey: 'PASTE_YOUR_API_KEY',
-  authDomain: 'PASTE_PROJECT_ID.firebaseapp.com',
-  projectId: 'PASTE_PROJECT_ID',
-  storageBucket: 'PASTE_PROJECT_ID.appspot.com',
-  messagingSenderId: 'PASTE_SENDER_ID',
-  appId: 'PASTE_APP_ID',
+  apiKey: 'AIzaSyBhbieYc_22vBkcXe8gEzrmJ-ZbSoPw2qA',
+  authDomain: 'web-for-my-lecture.firebaseapp.com',
+  projectId: 'web-for-my-lecture',
+  storageBucket: 'web-for-my-lecture.firebasestorage.app',
+  messagingSenderId: '831687027321',
+  appId: '1:831687027321:web:2570b4a17c88a2062502a8',
 };
 
 // apiKey가 자리표시자 그대로면 아직 설정 전으로 간주한다.
