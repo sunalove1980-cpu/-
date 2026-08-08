@@ -2,32 +2,35 @@
    전역 테마 변수 & 리셋
    :root 은 라이트 모드 기본값이며, [data-theme="dark"] 에서 덮어쓴다.
    AppContext가 사용자의 설정(system/light/dark)에 따라 html[data-theme]을 갱신한다.
+
+   컬러는 채도를 낮춘 더스티 로즈 + 세이지 톤의 파스텔 팔레트를 쓴다
+   (전형적인 보라/파랑 그라디언트 느낌을 피하기 위함).
 -------------------------------------------------------------------*/
 :root {
   color-scheme: light;
 
-  --color-bg: #f4f2ff;
+  --color-bg: #fbf4f1;
   --color-bg-elevated: #ffffff;
   --color-surface: #ffffff;
-  --color-surface-alt: #f0edff;
-  --color-border: #e3defc;
+  --color-surface-alt: #f4eae6;
+  --color-border: #ead9d3;
 
-  --color-text: #211a3d;
-  --color-text-muted: #6b6486;
-  --color-text-faint: #9993b3;
+  --color-text: #3e3330;
+  --color-text-muted: #8a7a74;
+  --color-text-faint: #b7a9a2;
 
-  --color-primary: #7c3aed;
-  --color-primary-dark: #5b21b6;
-  --color-accent: #2563eb;
-  --color-gradient: linear-gradient(135deg, #7c3aed 0%, #6d28d9 45%, #2563eb 100%);
-  --color-gradient-soft: linear-gradient(135deg, rgba(124, 58, 237, 0.14), rgba(37, 99, 235, 0.14));
+  --color-primary: #a85f70;
+  --color-primary-dark: #8f4c5c;
+  --color-accent: #4f8f86;
+  --color-gradient: linear-gradient(135deg, #c17e8d 0%, #a85f70 45%, #4f8f86 100%);
+  --color-gradient-soft: linear-gradient(135deg, rgba(193, 126, 141, 0.14), rgba(79, 143, 134, 0.14));
 
-  --color-xp: #f59e0b;
-  --color-success: #16a34a;
-  --color-danger: #dc2626;
+  --color-xp: #e3aa5f;
+  --color-success: #6f9e78;
+  --color-danger: #c96a6a;
 
-  --shadow-card: 0 10px 30px -12px rgba(76, 29, 149, 0.25);
-  --shadow-pop: 0 18px 40px -14px rgba(37, 99, 235, 0.35);
+  --shadow-card: 0 10px 30px -12px rgba(150, 110, 100, 0.2);
+  --shadow-pop: 0 18px 40px -14px rgba(150, 110, 100, 0.3);
 
   --radius-lg: 22px;
   --radius-md: 16px;
@@ -42,24 +45,34 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --color-bg: #14102b;
-  --color-bg-elevated: #1c1740;
-  --color-surface: #1f1a45;
-  --color-surface-alt: #241d52;
-  --color-border: #362a6e;
+  --color-bg: #221d1b;
+  --color-bg-elevated: #2b2523;
+  --color-surface: #2f2825;
+  --color-surface-alt: #392f2b;
+  --color-border: #4a3d37;
 
-  --color-text: #f1edff;
-  --color-text-muted: #b6adde;
-  --color-text-faint: #837bb0;
+  --color-text: #f3e9e4;
+  --color-text-muted: #c7b7af;
+  --color-text-faint: #8f7e76;
 
-  --color-primary: #a78bfa;
-  --color-primary-dark: #8b5cf6;
-  --color-accent: #60a5fa;
-  --color-gradient: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 45%, #2563eb 100%);
-  --color-gradient-soft: linear-gradient(135deg, rgba(139, 92, 246, 0.22), rgba(96, 165, 250, 0.2));
+  --color-primary: #d68a9a;
+  --color-primary-dark: #c17285;
+  --color-accent: #7fb8ac;
+  --color-gradient: linear-gradient(135deg, #d68a9a 0%, #c17285 45%, #7fb8ac 100%);
+  --color-gradient-soft: linear-gradient(135deg, rgba(214, 138, 154, 0.22), rgba(127, 184, 172, 0.2));
 
-  --shadow-card: 0 10px 30px -12px rgba(0, 0, 0, 0.55);
-  --shadow-pop: 0 18px 40px -14px rgba(0, 0, 0, 0.6);
+  --shadow-card: 0 10px 30px -12px rgba(0, 0, 0, 0.5);
+  --shadow-pop: 0 18px 40px -14px rgba(0, 0, 0, 0.55);
+}
+
+/* Pretendard 가변 폰트를 자체 호스팅한다 (오프라인 PWA에서도 항상 같은 서체로 보이도록,
+   외부 CDN 대신 public/fonts 에 폰트 파일을 두고 서비스워커로 캐싱한다). */
+@font-face {
+  font-family: 'Pretendard Variable';
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+  src: url('./assets/fonts/PretendardVariable.woff2') format('woff2');
 }
 
 * {
@@ -74,8 +87,8 @@ body,
 
 body {
   margin: 0;
-  font-family: 'Pretendard', 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    sans-serif;
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+    'Segoe UI', Roboto, 'Noto Sans KR', 'Malgun Gothic', sans-serif;
   background: var(--color-bg);
   color: var(--color-text);
   -webkit-tap-highlight-color: transparent;

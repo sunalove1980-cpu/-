@@ -26,8 +26,8 @@ export default defineConfig({
         scope: base,
         display: 'standalone',
         orientation: 'portrait-primary',
-        background_color: '#14102b',
-        theme_color: '#5b21b6',
+        background_color: '#fbf4f1',
+        theme_color: '#a85f70',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
@@ -38,6 +38,8 @@ export default defineConfig({
       workbox: {
         // 오프라인에서도 앱 셸과 정적 자산이 열리도록 프리캐시하고, 문서 요청은 SPA fallback으로 처리한다.
         globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
+        // Pretendard Variable 폰트(~2MB)가 기본 2MB 한도에 걸리지 않도록 여유를 둔다.
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         navigateFallback: `${base}index.html`,
         runtimeCaching: [
           {
