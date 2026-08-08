@@ -9,18 +9,31 @@ export default function ImageAttachments({ images, onChange }) {
   const inputRef = useRef(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [urlMap, setUrlMap] = useState({});
+  const urlMapRef = useRef(urlMap);
+  urlMapRef.current = urlMap;
 
+  // 이미지별 미리보기 object URL 관리.
+  // 새로 추가된 이미지에만 URL을 만들고, 목록에서 빠진 이미지의 URL만 골라서 해제한다
+  // (표시 중인 URL까지 한꺼번에 해제하면 기존 썸네일이 깨진다).
   useEffect(() => {
-    const nextUrls = {};
-    images.forEach((img) => {
-      nextUrls[img.id] = urlMap[img.id] || URL.createObjectURL(img.blob);
+    setUrlMap((prev) => {
+      const next = {};
+      images.forEach((img) => {
+        next[img.id] = prev[img.id] || URL.createObjectURL(img.blob);
+      });
+      Object.entries(prev).forEach(([id, url]) => {
+        if (!next[id]) URL.revokeObjectURL(url);
+      });
+      return next;
     });
-    setUrlMap(nextUrls);
-    return () => {
-      Object.values(nextUrls).forEach((url) => URL.revokeObjectURL(url));
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images]);
+
+  // 컴포넌트가 사라질 때(폼 닫기 등) 남아있는 URL을 모두 해제한다.
+  useEffect(() => {
+    return () => {
+      Object.values(urlMapRef.current).forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, []);
 
   const handleFiles = async (event) => {
     const files = Array.from(event.target.files || []);
@@ -60,12 +73,13 @@ export default function ImageAttachments({ images, onChange }) {
           </button>
         </div>
       </div>
+      {/* capture 속성을 붙이면 안드로이드에서 카메라만 강제로 열려 갤러리 선택이 막히므로,
+          속성 없이 두어 브라우저가 '카메라 / 갤러리' 선택지를 띄우게 한다. */}
       <input
         ref={inputRef}
         type="file"
         accept="image/*"
         multiple
-        capture="environment"
         onChange={handleFiles}
         className="visually-hidden"
       />

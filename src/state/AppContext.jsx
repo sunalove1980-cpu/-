@@ -30,6 +30,14 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     let cancelled = false;
+
+    // 브라우저에 "이 사이트의 저장 데이터를 지우지 말아 달라"고 요청한다.
+    // 승인되면 기기 저장공간이 부족해도 IndexedDB의 기록이 자동 삭제 대상에서 제외된다.
+    // (지원하지 않는 브라우저에서는 조용히 무시된다)
+    if (navigator.storage?.persist) {
+      navigator.storage.persist().catch(() => {});
+    }
+
     (async () => {
       try {
         await refresh();

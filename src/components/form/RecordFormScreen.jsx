@@ -6,27 +6,37 @@ import VoiceTextarea from './VoiceTextarea.jsx';
 import ImageAttachments from './ImageAttachments.jsx';
 import './RecordFormScreen.css';
 
-const EMPTY_FORM = {
-  type: 'movie',
-  title: '',
-  creator: '',
-  genre: '',
-  watchedOn: todayString(),
-  rating: 0,
-  synopsis: '',
-  review: '',
-  memorableScene: '',
-  images: [],
-};
+// 폼을 여는 시점의 오늘 날짜가 기본값이 되도록 함수로 만든다
+// (모듈 상수로 두면 앱을 며칠씩 켜두는 PWA 특성상 날짜가 앱 실행일에 고정된다).
+function makeEmptyForm() {
+  return {
+    type: 'movie',
+    title: '',
+    creator: '',
+    genre: '',
+    watchedOn: todayString(),
+    rating: 0,
+    synopsis: '',
+    review: '',
+    memorableScene: '',
+    images: [],
+  };
+}
 
 export default function RecordFormScreen({ record, onDone, onCancel }) {
   const { addRecord, editRecord } = useApp();
   const isEdit = Boolean(record);
-  const [form, setForm] = useState(() => (record ? { ...EMPTY_FORM, ...record } : EMPTY_FORM));
+  const [form, setForm] = useState(() => (record ? { ...makeEmptyForm(), ...record } : makeEmptyForm()));
   const [isSaving, setIsSaving] = useState(false);
   const [titleError, setTitleError] = useState('');
 
-  const update = (key) => (value) => setForm((prev) => ({ ...prev, [key]: value }));
+  // VoiceTextarea는 음성 인식 결과를 이어 붙이기 위해 함수형 업데이트((prev) => next)를
+  // 넘겨오므로, 값과 함수 두 형태를 모두 처리해야 한다.
+  const update = (key) => (value) =>
+    setForm((prev) => ({
+      ...prev,
+      [key]: typeof value === 'function' ? value(prev[key]) : value,
+    }));
 
   const handleSubmit = async (event) => {
     event.preventDefault();
