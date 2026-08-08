@@ -7,9 +7,9 @@
 // records 스토어의 레코드 형태:
 // {
 //   id: string,                 // uuid
-//   type: 'movie' | 'book',     // 영화 / 책
+//   type: 'movie' | 'drama' | 'book',   // 영화 / 드라마 / 책 (src/utils/recordTypes.js 참고)
 //   title: string,              // 제목
-//   creator: string,            // 감독 또는 작가 (선택)
+//   creator: string,            // 감독/연출 또는 작가 (선택)
 //   genre: string,              // 장르/태그 (선택, 콤마로 여러 개 입력 가능)
 //   watchedOn: string,          // 감상(관람/완독)한 날짜, YYYY-MM-DD
 //   rating: number,             // 내 별점 0~5 (0.5 단위)

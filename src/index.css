@@ -3,34 +3,35 @@
    :root 은 라이트 모드 기본값이며, [data-theme="dark"] 에서 덮어쓴다.
    AppContext가 사용자의 설정(system/light/dark)에 따라 html[data-theme]을 갱신한다.
 
-   컬러는 채도를 낮춘 더스티 로즈 + 세이지 톤의 파스텔 팔레트를 쓴다
-   (전형적인 보라/파랑 그라디언트 느낌을 피하기 위함).
+   컬러는 산뜻한 민트 톤의 파스텔 팔레트를 쓴다. 버튼/헤더처럼 흰 글씨가 올라가는
+   면은 흰 글씨가 잘 읽히도록 살짝 짙은 민트 두 톤만 쓰고, 배경/카드는 아주 옅은
+   민트로 은은하게 색을 얹는다.
 -------------------------------------------------------------------*/
 :root {
   color-scheme: light;
 
-  --color-bg: #fbf4f1;
+  --color-bg: #f1faf7;
   --color-bg-elevated: #ffffff;
   --color-surface: #ffffff;
-  --color-surface-alt: #f4eae6;
-  --color-border: #ead9d3;
+  --color-surface-alt: #e3f4ee;
+  --color-border: #cfe9e0;
 
-  --color-text: #3e3330;
-  --color-text-muted: #8a7a74;
-  --color-text-faint: #b7a9a2;
+  --color-text: #1f332e;
+  --color-text-muted: #6c8983;
+  --color-text-faint: #9db8b0;
 
-  --color-primary: #a85f70;
-  --color-primary-dark: #8f4c5c;
-  --color-accent: #4f8f86;
-  --color-gradient: linear-gradient(135deg, #c17e8d 0%, #a85f70 45%, #4f8f86 100%);
-  --color-gradient-soft: linear-gradient(135deg, rgba(193, 126, 141, 0.14), rgba(79, 143, 134, 0.14));
+  --color-primary: #1c9683;
+  --color-primary-dark: #167a6b;
+  --color-accent: #2fb89c;
+  --color-gradient: linear-gradient(135deg, #2fb89c 0%, #1c9683 100%);
+  --color-gradient-soft: linear-gradient(135deg, rgba(47, 184, 156, 0.16), rgba(28, 150, 131, 0.14));
 
-  --color-xp: #e3aa5f;
-  --color-success: #6f9e78;
-  --color-danger: #c96a6a;
+  --color-xp: #e8b54a;
+  --color-success: #3fae7e;
+  --color-danger: #e0776a;
 
-  --shadow-card: 0 10px 30px -12px rgba(150, 110, 100, 0.2);
-  --shadow-pop: 0 18px 40px -14px rgba(150, 110, 100, 0.3);
+  --shadow-card: 0 10px 30px -12px rgba(30, 130, 110, 0.18);
+  --shadow-pop: 0 18px 40px -14px rgba(30, 130, 110, 0.28);
 
   --radius-lg: 22px;
   --radius-md: 16px;
@@ -45,21 +46,23 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --color-bg: #221d1b;
-  --color-bg-elevated: #2b2523;
-  --color-surface: #2f2825;
-  --color-surface-alt: #392f2b;
-  --color-border: #4a3d37;
+  --color-bg: #0f1f1b;
+  --color-bg-elevated: #152a24;
+  --color-surface: #19312a;
+  --color-surface-alt: #1f3b33;
+  --color-border: #2b4a40;
 
-  --color-text: #f3e9e4;
-  --color-text-muted: #c7b7af;
-  --color-text-faint: #8f7e76;
+  --color-text: #e7f5f0;
+  --color-text-muted: #a7c4bb;
+  --color-text-faint: #71938a;
 
-  --color-primary: #d68a9a;
-  --color-primary-dark: #c17285;
-  --color-accent: #7fb8ac;
-  --color-gradient: linear-gradient(135deg, #d68a9a 0%, #c17285 45%, #7fb8ac 100%);
-  --color-gradient-soft: linear-gradient(135deg, rgba(214, 138, 154, 0.22), rgba(127, 184, 172, 0.2));
+  --color-primary: #5fd3ba;
+  --color-primary-dark: #4fc0a8;
+  --color-accent: #7fe0cb;
+  /* 버튼/헤더 배경은 라이트 모드와 같은 짙은 민트를 그대로 써서 흰 글씨 대비를 유지한다;
+     어두운 배경 위에서도 이 톤이면 충분히 밝게 도드라진다. */
+  --color-gradient: linear-gradient(135deg, #2fb89c 0%, #1c9683 100%);
+  --color-gradient-soft: linear-gradient(135deg, rgba(47, 184, 156, 0.24), rgba(28, 150, 131, 0.22));
 
   --shadow-card: 0 10px 30px -12px rgba(0, 0, 0, 0.5);
   --shadow-pop: 0 18px 40px -14px rgba(0, 0, 0, 0.55);

@@ -13,21 +13,23 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      // 새 버전이 배포되면 즉시 덮어쓰지 않고 사용자에게 업데이트 여부를 물어본다 (UpdatePrompt 컴포넌트).
-      registerType: 'prompt',
+      // 새 버전이 배포되면 백그라운드에서 곧바로 새 서비스워커를 활성화한다.
+      // 열려 있는 탭을 바로 바꿔치기하진 않지만(사용 중 화면이 갑자기 리셋되지 않도록),
+      // 앱을 완전히 종료했다가 다시 열면(=새 네비게이션) 별도 확인 없이 최신 버전으로 열린다.
+      registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icons/favicon-16.png', 'icons/favicon-32.png', 'icons/apple-touch-icon.png'],
       manifest: {
         id: base,
         name: '감상노트 - 영화·책 기록',
         short_name: '감상노트',
-        description: '내가 본 영화와 읽은 책의 줄거리, 별점, 인상 깊은 장면을 사진과 음성으로 기록하는 앱',
+        description: '내가 본 영화·드라마와 읽은 책의 줄거리, 별점, 인상 깊은 장면을 사진과 음성으로 기록하는 앱',
         lang: 'ko',
         start_url: base,
         scope: base,
         display: 'standalone',
         orientation: 'portrait-primary',
-        background_color: '#fbf4f1',
-        theme_color: '#a85f70',
+        background_color: '#f1faf7',
+        theme_color: '#1c9683',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },

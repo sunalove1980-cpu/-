@@ -3,7 +3,6 @@ import { AppProvider, useApp } from './state/AppContext.jsx';
 import AppShell from './components/layout/AppShell.jsx';
 import BottomNav from './components/layout/BottomNav.jsx';
 import SaveToast from './components/layout/SaveToast.jsx';
-import UpdatePrompt from './components/layout/UpdatePrompt.jsx';
 import RecordListScreen from './components/list/RecordListScreen.jsx';
 import RecordDetailScreen from './components/detail/RecordDetailScreen.jsx';
 import RecordFormScreen from './components/form/RecordFormScreen.jsx';
@@ -88,7 +87,6 @@ function AppContent() {
     <>
       <AppShell nav={<BottomNav activeTab={activeTab} onChangeTab={changeTab} />}>{screen}</AppShell>
       <SaveToast />
-      <UpdatePrompt />
     </>
   );
 }

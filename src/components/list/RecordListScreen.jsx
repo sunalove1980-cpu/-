@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
 import { useApp } from '../../state/AppContext.jsx';
+import { RECORD_TYPES } from '../../utils/recordTypes.js';
 import RecordCard from './RecordCard.jsx';
 import './RecordListScreen.css';
 
 const FILTERS = [
   { key: 'all', label: '전체' },
-  { key: 'movie', label: '🎬 영화' },
-  { key: 'book', label: '📖 책' },
+  ...RECORD_TYPES.map((type) => ({ key: type.key, label: `${type.emoji} ${type.label}` })),
 ];
 
 export default function RecordListScreen({ onSelect, onAdd }) {
@@ -30,7 +30,7 @@ export default function RecordListScreen({ onSelect, onAdd }) {
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="제목, 감독/작가로 검색"
+          placeholder="제목, 감독/작가/연출로 검색"
           aria-label="기록 검색"
         />
       </div>
@@ -52,7 +52,7 @@ export default function RecordListScreen({ onSelect, onAdd }) {
 
       {filtered.length === 0 ? (
         <div className="record-list__empty">
-          <span aria-hidden="true">🎞️📚</span>
+          <span aria-hidden="true">🎞️📺📚</span>
           <p>{records.length === 0 ? '아직 기록이 없어요.\n첫 감상을 남겨보세요!' : '검색 결과가 없어요.'}</p>
         </div>
       ) : (

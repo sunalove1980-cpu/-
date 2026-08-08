@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../../state/AppContext.jsx';
 import { todayString } from '../../utils/date.js';
+import { RECORD_TYPES, getTypeMeta } from '../../utils/recordTypes.js';
 import StarRatingInput from './StarRatingInput.jsx';
 import VoiceTextarea from './VoiceTextarea.jsx';
 import ImageAttachments from './ImageAttachments.jsx';
@@ -38,6 +39,8 @@ export default function RecordFormScreen({ record, onDone, onCancel }) {
       [key]: typeof value === 'function' ? value(prev[key]) : value,
     }));
 
+  const typeMeta = getTypeMeta(form.type);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!form.title.trim()) {
@@ -63,20 +66,16 @@ export default function RecordFormScreen({ record, onDone, onCancel }) {
   return (
     <form className="record-form" onSubmit={handleSubmit}>
       <div className="record-form__type-toggle" role="radiogroup" aria-label="종류 선택">
-        <button
-          type="button"
-          className={form.type === 'movie' ? 'is-active' : ''}
-          onClick={() => update('type')('movie')}
-        >
-          🎬 영화
-        </button>
-        <button
-          type="button"
-          className={form.type === 'book' ? 'is-active' : ''}
-          onClick={() => update('type')('book')}
-        >
-          📖 책
-        </button>
+        {RECORD_TYPES.map((type) => (
+          <button
+            key={type.key}
+            type="button"
+            className={form.type === type.key ? 'is-active' : ''}
+            onClick={() => update('type')(type.key)}
+          >
+            {type.emoji} {type.label}
+          </button>
+        ))}
       </div>
 
       <label className="record-form__field">
@@ -85,18 +84,18 @@ export default function RecordFormScreen({ record, onDone, onCancel }) {
           type="text"
           value={form.title}
           onChange={(event) => update('title')(event.target.value)}
-          placeholder={form.type === 'movie' ? '영화 제목' : '책 제목'}
+          placeholder={typeMeta.titlePlaceholder}
         />
         {titleError && <em className="record-form__error">{titleError}</em>}
       </label>
 
       <div className="record-form__row">
         <label className="record-form__field">
-          <span>{form.type === 'movie' ? '감독' : '작가'}</span>
+          <span>{typeMeta.creatorLabel}</span>
           <input type="text" value={form.creator} onChange={(event) => update('creator')(event.target.value)} />
         </label>
         <label className="record-form__field">
-          <span>{form.type === 'movie' ? '관람일' : '완독일'}</span>
+          <span>{typeMeta.dateLabel}</span>
           <input type="date" value={form.watchedOn} onChange={(event) => update('watchedOn')(event.target.value)} />
         </label>
       </div>
@@ -107,7 +106,7 @@ export default function RecordFormScreen({ record, onDone, onCancel }) {
           type="text"
           value={form.genre}
           onChange={(event) => update('genre')(event.target.value)}
-          placeholder="예: 드라마, 성장, SF"
+          placeholder="예: 성장, 힐링, SF"
         />
       </label>
 

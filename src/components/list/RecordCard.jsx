@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { formatDateKo } from '../../utils/date.js';
+import { getTypeMeta } from '../../utils/recordTypes.js';
 import './RecordCard.css';
 
 export default function RecordCard({ record, onClick }) {
@@ -22,7 +23,7 @@ export default function RecordCard({ record, onClick }) {
         {thumbUrl ? (
           <img src={thumbUrl} alt="" />
         ) : (
-          <span aria-hidden="true">{record.type === 'movie' ? '🎬' : '📖'}</span>
+          <span aria-hidden="true">{getTypeMeta(record.type).emoji}</span>
         )}
       </div>
       <div className="record-card__body">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useApp } from '../../state/AppContext.jsx';
 import { formatDateKo } from '../../utils/date.js';
+import { getTypeMeta } from '../../utils/recordTypes.js';
 import './RecordDetailScreen.css';
 
 function ImageGallery({ images }) {
@@ -58,7 +59,9 @@ export default function RecordDetailScreen({ record, onEdit, onBack }) {
       </div>
 
       <div className="record-detail__header">
-        <span className="record-detail__type">{record.type === 'movie' ? '🎬 영화' : '📖 책'}</span>
+        <span className="record-detail__type">
+          {getTypeMeta(record.type).emoji} {getTypeMeta(record.type).label}
+        </span>
         <h1>{record.title}</h1>
         <p className="record-detail__meta">
           {record.creator && <span>{record.creator}</span>}

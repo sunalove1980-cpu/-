@@ -10,7 +10,7 @@ export default function AppShell({ nav, children }) {
           </span>
           <div>
             <p className="app-header__title">감상노트</p>
-            <p className="app-header__subtitle">본 영화, 읽은 책을 오래오래 기억해요</p>
+            <p className="app-header__subtitle">본 것, 읽은 것을 오래오래 기억해요</p>
           </div>
         </div>
       </header>

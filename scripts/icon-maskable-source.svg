@@ -1,50 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#C17E8D"/>
-      <stop offset="55%" stop-color="#A85F70"/>
-      <stop offset="100%" stop-color="#4F8F86"/>
+      <stop offset="0%" stop-color="#2FB89C"/>
+      <stop offset="100%" stop-color="#167A6B"/>
     </linearGradient>
-    <linearGradient id="mark" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF"/>
-      <stop offset="100%" stop-color="#FBF0EC"/>
-    </linearGradient>
-    <linearGradient id="star" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#F4CD8A"/>
-      <stop offset="100%" stop-color="#E3AA5F"/>
-    </linearGradient>
-    <radialGradient id="glow" cx="35%" cy="25%" r="60%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
-    </radialGradient>
   </defs>
 
   <!-- background: full bleed, no rounding (OS applies its own mask shape) -->
   <rect width="512" height="512" fill="url(#bg)"/>
-  <rect width="512" height="512" fill="url(#glow)"/>
 
   <!-- symbol group scaled ~72% and centered within the 80% safe-zone circle -->
   <g transform="translate(256 256) scale(0.72) translate(-256 -256)">
-    <path d="M96 168
-             C150 148 210 152 256 180
-             L256 372
-             C210 344 150 340 96 360
+    <path d="M190 130
+             Q190 110 210 110
+             H302
+             Q322 110 322 130
+             V402
+             L256 344
+             L190 402
              Z"
-          fill="url(#mark)" stroke="#FFFFFF" stroke-width="3" stroke-opacity="0.5"/>
-    <path d="M416 168
-             C362 148 302 152 256 180
-             L256 372
-             C302 344 362 340 416 360
-             Z"
-          fill="url(#mark)" stroke="#FFFFFF" stroke-width="3" stroke-opacity="0.5"/>
-    <path d="M256 180 L256 372" stroke="#A85F70" stroke-width="4" opacity="0.3"/>
-
-    <path d="M126 208 L226 196 M126 240 L226 228 M126 272 L226 260" stroke="#A85F70" stroke-width="6" stroke-linecap="round" opacity="0.25"/>
-    <path d="M386 208 L286 196 M386 240 L286 228 M386 272 L286 260" stroke="#A85F70" stroke-width="6" stroke-linecap="round" opacity="0.25"/>
-
-    <path d="M256 100 L272 140 L316 144 L282 172 L292 216 L256 192 L220 216 L230 172 L196 144 L240 140 Z"
-          fill="url(#star)" stroke="#C08A3E" stroke-width="3" stroke-linejoin="round"/>
-
-    <path d="M400 356 L406 372 L422 378 L406 384 L400 400 L394 384 L378 378 L394 372 Z" fill="#FFFFFF" opacity="0.85"/>
+          fill="#FFFFFF"/>
+    <path d="M302 110 L322 130 L302 130 Z" fill="#0F5A4E" opacity="0.16"/>
   </g>
 </svg>
