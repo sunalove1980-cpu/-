@@ -1,29 +1,21 @@
+import { useEffect } from 'react';
 import { useApp } from '../../state/AppContext.jsx';
 import './SaveToast.css';
 
 export default function SaveToast() {
-  const { saveStatus, errorMessage, actions } = useApp();
+  const { toast, clearToast } = useApp();
 
-  if (errorMessage) {
-    return (
-      <div className="save-toast save-toast--error" role="alert">
-        <span aria-hidden="true">⚠️</span>
-        <span>{errorMessage}</span>
-        <button type="button" onClick={actions.clearError} aria-label="오류 메시지 닫기">
-          닫기
-        </button>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!toast) return undefined;
+    const timer = setTimeout(clearToast, 2200);
+    return () => clearTimeout(timer);
+  }, [toast, clearToast]);
 
-  if (saveStatus === 'saved') {
-    return (
-      <div className="save-toast save-toast--success" role="status">
-        <span aria-hidden="true">✅</span>
-        <span>저장되었습니다</span>
-      </div>
-    );
-  }
+  if (!toast) return null;
 
-  return null;
+  return (
+    <div className="save-toast" role="status" aria-live="polite">
+      {toast.message}
+    </div>
+  );
 }

@@ -1,0 +1,125 @@
+.record-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 24px;
+}
+
+.record-detail__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.record-detail__back {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.record-detail__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.record-detail__actions button {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.record-detail__delete {
+  color: var(--color-danger);
+}
+
+.record-detail__header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.record-detail__type {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.record-detail__header h1 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.record-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.record-detail__rating {
+  color: var(--color-xp, #f59e0b);
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+.record-detail__rating strong {
+  margin-left: 8px;
+  color: var(--color-text);
+  font-size: 13px;
+  letter-spacing: normal;
+}
+
+.record-detail section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.record-detail section h2 {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.record-detail section p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text);
+  white-space: pre-wrap;
+}
+
+.record-detail__gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.record-detail__gallery figure {
+  margin: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-surface-alt);
+}
+
+.record-detail__gallery img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
+
+.record-detail__gallery figcaption {
+  padding: 6px 8px;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}

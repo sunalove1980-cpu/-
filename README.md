@@ -1,17 +1,29 @@
-# 건강 퀘스트 (Health Quest)
+# 감상노트 (영화·책 기록 앱)
 
-습관을 체크하면 경험치와 코인을 얻고 캐릭터 레벨이 오르는 게임형 건강 습관 관리 웹앱입니다.
-React + Vite로 만들었고, 회원가입이나 서버 없이 브라우저(IndexedDB)에만 데이터를 저장하는
-PWA(Progressive Web App)입니다.
+내가 본 영화와 읽은 책을 오래 기억할 수 있도록, 줄거리·내 별점·인상 깊었던 장면을 사진과 음성으로
+기록하는 PWA(Progressive Web App)입니다. 회원가입이나 서버 없이 브라우저(IndexedDB)에만 데이터를
+저장하기 때문에, 앱을 종료했다가 다시 열어도(핸드폰을 재부팅해도) 기록이 그대로 남아있습니다.
 
 ## 주요 기능
 
-- 오늘의 건강 퀘스트 체크 (경험치/코인 획득, 레벨업, 축하 애니메이션)
-- 날짜별 기록 보관 (달력, 최근 7일/30일 통계, 습관별 달성률, 체중 변화 그래프, 메모)
-- 연속 달성일(스트릭)과 회복 보너스, 업적 배지, 주간 건강 보스전
-- 습관 직접 추가/수정/삭제 (삭제해도 과거 기록은 보존)
-- JSON 백업/복원, 전체 초기화(2단계 확인)
-- 라이트/다크 모드, 오프라인 지원, 홈 화면 설치(PWA)
+- 영화 / 책 구분해서 기록 (제목, 감독·작가, 관람일·완독일, 장르)
+- 내 별점 (0.5점 단위), 줄거리, 인상 깊었던 장면, 나의 총평 기록
+- 줄거리·인상 깊은 장면·총평은 **타이핑은 물론 마이크 버튼으로 음성 입력**도 가능
+- 인상 깊었던 장면에 **사진 첨부** (갤러리 선택 또는 카메라 촬영, 여러 장 가능)
+- 제목·감독·작가로 검색, 영화/책 종류별 필터
+- **오프라인에서도 사용 가능**, 홈 화면에 앱처럼 설치(PWA)
+- 사진을 포함한 전체 기록을 파일로 내보내기/가져오기(백업·복원), 라이트/다크 모드
+
+## 데이터는 어디에 저장되나요?
+
+이 앱은 별도의 서버나 데이터베이스가 없습니다. 모든 기록(사진 포함)은 지금 사용 중인 브라우저의
+**IndexedDB**라는 저장 공간에 저장됩니다. 그래서:
+
+- 앱(브라우저 탭)을 완전히 종료해도, 핸드폰을 재부팅해도 기록은 그대로 남아있습니다.
+- 다만 브라우저의 "사이트 데이터 삭제"를 하거나, 홈 화면에 설치한 앱을 완전히 삭제하면 기록도 함께
+  사라질 수 있습니다. **설정 → 백업/복원**에서 주기적으로 내보내기(백업)를 해두는 것을 권장합니다.
+- 다른 사람과 배포 주소를 공유해서 각자 접속하더라도, 각자의 기록은 각자의 기기에만 저장되고
+  서로 공유되지 않습니다.
 
 ## 1. 로컬에서 실행하는 방법
 
@@ -40,8 +52,8 @@ npm run build     # dist/ 폴더에 배포용 정적 파일 생성
 npm run preview   # 빌드 결과물을 로컬에서 미리보기 (PWA 기능까지 실제처럼 테스트 가능)
 ```
 
-> PWA(서비스워커, 오프라인, 설치 배너)는 `npm run dev`가 아니라
-> `npm run build && npm run preview`로 확인해야 정확합니다.
+> PWA(서비스워커, 오프라인, 설치 배너), 마이크 음성 입력, 카메라 촬영은 `npm run dev`가 아니라
+> `npm run build && npm run preview` 혹은 실제 배포 주소(HTTPS)에서 확인해야 정확합니다.
 
 ## 2. 깃허브(GitHub)에 올리는 방법
 
@@ -49,7 +61,7 @@ npm run preview   # 빌드 결과물을 로컬에서 미리보기 (PWA 기능까
 
 ```bash
 git add .
-git commit -m "건강 퀘스트 앱 추가"
+git commit -m "감상노트 앱 추가"
 git push
 ```
 
@@ -61,35 +73,40 @@ git push
 ```bash
 git init
 git add .
-git commit -m "첫 커밋: 건강 퀘스트 앱"
+git commit -m "첫 커밋: 감상노트 앱"
 git branch -M main
 git remote add origin https://github.com/내계정/저장소이름.git
 git push -u origin main
 ```
 
-## 3. 배포하는 방법 (Vercel 예시, 가장 쉬움)
+## 3. 배포하는 방법 (Vercel, 가장 쉬움)
 
 1. [vercel.com](https://vercel.com)에 깃허브 계정으로 로그인합니다.
 2. "Add New… → Project"를 누르고 방금 올린 깃허브 저장소를 선택합니다.
-3. Framework Preset이 자동으로 **Vite**로 인식됩니다. (Build Command: `npm run build`, Output Directory: `dist`)
+3. Framework Preset이 자동으로 **Vite**로 인식됩니다. (Build Command: `npm run build`, Output
+   Directory: `dist`) 별도 설정 없이 그대로 "Deploy"를 눌러도 됩니다.
 4. "Deploy" 버튼을 누르면 몇 분 안에 `https://내프로젝트.vercel.app` 같은 주소가 생성됩니다.
+5. 이 주소를 가족이나 친구에게 공유하면 각자의 핸드폰에서 접속해 자신만의 기록을 남길 수 있습니다
+   (기록은 기기별로 저장되며 서로 공유되지 않습니다).
 
-Netlify를 쓰고 싶다면 [netlify.com](https://netlify.com)에서 동일하게 깃허브 저장소를 연결하고,
-Build command는 `npm run build`, Publish directory는 `dist`로 설정하면 됩니다.
+이후 깃허브 저장소에 새 커밋을 푸시할 때마다 Vercel이 자동으로 다시 빌드/배포해 줍니다.
 
-> ⚠️ PWA는 **HTTPS 주소**에서만 정상적으로 설치/오프라인 동작합니다. Vercel/Netlify는 기본적으로
-> HTTPS를 제공하므로 별도 설정이 필요 없습니다.
+> ⚠️ PWA 설치, 카메라 촬영, 음성 입력은 모두 **HTTPS 주소**에서만 정상적으로 동작합니다.
+> Vercel은 기본적으로 HTTPS를 제공하므로 별도 설정이 필요 없습니다.
 
-### GitHub Pages로 배포하기 (별도 계정 가입 없이 가능)
+### GitHub Pages로 배포하기 (별도 가입 없이 가능)
 
-이 저장소에는 `.github/workflows/deploy-pages.yml`이 이미 포함되어 있어서, 코드를 푸시하면
-자동으로 빌드해 GitHub Pages에 배포합니다. 처음 한 번만 아래 설정이 필요합니다.
+이 저장소에는 `.github/workflows/deploy-pages.yml`이 이미 포함되어 있어서, 지정된 브랜치로 코드를
+푸시하면 자동으로 빌드해 GitHub Pages에 배포합니다. 처음 한 번만 아래 설정이 필요합니다.
 
 1. 깃허브 저장소 페이지에서 **Settings → Pages**로 이동합니다.
 2. "Build and deployment" 항목의 **Source**를 **GitHub Actions**로 선택합니다.
 3. 저장소의 **Actions** 탭에서 "Deploy to GitHub Pages" 워크플로가 자동으로 실행되는지 확인합니다
    (실행되지 않으면 "Run workflow" 버튼으로 수동 실행할 수 있습니다).
 4. 완료되면 `https://내계정.github.io/저장소이름/` 주소로 접속할 수 있습니다.
+
+> 다른 브랜치(예: `main`)에서 배포하고 싶다면 `.github/workflows/deploy-pages.yml`의
+> `branches: [...]` 값을 원하는 브랜치 이름으로 바꿔주세요.
 
 ## 4. 휴대전화에 앱처럼 설치하는 방법
 
@@ -113,20 +130,29 @@ Build command는 `npm run build`, Publish directory는 `dist`로 설정하면 �
 앱이 업데이트되면 화면 하단에 "새로운 버전이 있습니다" 안내가 뜨며, 버튼을 누르면 최신 버전으로
 갱신됩니다.
 
+### 음성 입력 / 카메라 권한 안내
+
+- 마이크 버튼(🎤 음성 입력)을 처음 누르면 브라우저가 마이크 권한을 요청합니다. "허용"을 눌러야
+  음성 인식이 동작합니다.
+- 사진 첨부 시 "사진 추가" 버튼을 누르면 카메라 촬영 또는 갤러리 선택 중 고를 수 있습니다.
+- 음성 입력은 브라우저마다 지원 여부가 달라요. 안드로이드 Chrome, 최신 iOS Safari 등 대부분의
+  최신 모바일 브라우저에서 지원되며, 지원하지 않는 환경에서는 마이크 버튼이 보이지 않고 직접
+  입력만 가능합니다.
+
 ## 프로젝트 구조
 
 ```
 src/
-├─ db/            # IndexedDB 래퍼(db.js)와 데이터 스키마 문서(schema.js)
-├─ state/         # 전역 상태(AppContext), 게임 로직, 날짜/통계 유틸
-├─ components/
-│  ├─ layout/     # 상단바, 하단 내비게이션, 저장/배지/업데이트 토스트
-│  ├─ today/      # 오늘의 퀘스트 화면
-│  ├─ growth/     # 성장(레벨/스트릭/배지) 화면
-│  ├─ records/    # 기록/통계/차트 화면
-│  ├─ weeklyBoss/ # 주간 건강 보스전 화면
-│  └─ settings/   # 습관 관리, 백업/복원, 테마, 초기화, 안내문
-└─ App.jsx, main.jsx, index.css
+├─ db/            # IndexedDB 래퍼(db.js), 기록 CRUD(recordsRepo.js), 스키마 문서(schema.js)
+├─ state/         # 전역 상태(AppContext) - 기록 목록, 테마, 저장 토스트 등
+├─ hooks/         # 음성 인식 훅(useSpeechToText)
+├─ utils/         # 이미지 리사이즈/변환, 날짜 포맷, id 생성 유틸
+└─ components/
+   ├─ layout/     # 상단바, 하단 내비게이션, 저장/업데이트 토스트
+   ├─ list/       # 기록 목록/검색/필터 화면
+   ├─ detail/     # 기록 상세 화면
+   ├─ form/       # 기록 작성/수정 폼 (별점, 음성 입력, 사진 첨부)
+   └─ settings/   # 테마, 백업/복원, 초기화
 ```
 
 데이터 저장 구조에 대한 자세한 설명은 `src/db/schema.js` 파일 상단 주석을 참고하세요.
@@ -134,15 +160,10 @@ src/
 ## 앱 아이콘 다시 만들기
 
 `scripts/icon-source.svg`, `scripts/icon-maskable-source.svg` 파일을 수정한 뒤,
-아래 명령으로 필요한 모든 크기의 PNG를 다시 생성할 수 있습니다.
+아래 명령으로 필요한 모든 크기의 PNG와 favicon.ico를 다시 생성할 수 있습니다.
 
 ```bash
-npm install -D sharp
+npm install -D sharp png-to-ico
 node scripts/gen-icons.mjs
-npm uninstall sharp
+npm uninstall sharp png-to-ico
 ```
-
-## 안내
-
-이 앱은 건강 습관을 기록하고 동기부여를 돕기 위한 용도이며, 의료 진단이나 치료를 제공하지
-않습니다. 자세한 내용은 앱 내 설정 화면의 안내문을 확인하세요.

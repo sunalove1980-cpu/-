@@ -1,6 +1,6 @@
 // IndexedDB 저장을 위한 얇은 Promise 래퍼.
 // 브라우저의 IndexedDB API를 직접 감싸서 async/await로 쓸 수 있게 해준다.
-import { DB_NAME, DB_VERSION, STORE_HABITS, STORE_DAILY_RECORDS, STORE_META } from './schema.js';
+import { DB_NAME, DB_VERSION, STORE_RECORDS, STORE_META } from './schema.js';
 
 let dbPromise = null;
 
@@ -17,11 +17,10 @@ function openDatabase() {
 
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
-      if (!db.objectStoreNames.contains(STORE_HABITS)) {
-        db.createObjectStore(STORE_HABITS, { keyPath: 'id' });
-      }
-      if (!db.objectStoreNames.contains(STORE_DAILY_RECORDS)) {
-        db.createObjectStore(STORE_DAILY_RECORDS, { keyPath: 'date' });
+      if (!db.objectStoreNames.contains(STORE_RECORDS)) {
+        const store = db.createObjectStore(STORE_RECORDS, { keyPath: 'id' });
+        store.createIndex('type', 'type', { unique: false });
+        store.createIndex('updatedAt', 'updatedAt', { unique: false });
       }
       if (!db.objectStoreNames.contains(STORE_META)) {
         db.createObjectStore(STORE_META, { keyPath: 'key' });
@@ -82,13 +81,6 @@ export async function putOne(storeName, value) {
   });
 }
 
-export async function putMany(storeName, values) {
-  return withStore(storeName, 'readwrite', (store) => {
-    values.forEach((value) => store.put(value));
-    return values;
-  });
-}
-
 export async function deleteOne(storeName, key) {
   return withStore(storeName, 'readwrite', (store) => {
     store.delete(key);
@@ -102,9 +94,8 @@ export async function clearStore(storeName) {
 }
 
 export async function clearAllStores() {
-  await clearStore(STORE_HABITS);
-  await clearStore(STORE_DAILY_RECORDS);
+  await clearStore(STORE_RECORDS);
   await clearStore(STORE_META);
 }
 
-export { STORE_HABITS, STORE_DAILY_RECORDS, STORE_META };
+export { STORE_RECORDS, STORE_META };

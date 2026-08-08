@@ -23,10 +23,8 @@
   --color-gradient-soft: linear-gradient(135deg, rgba(124, 58, 237, 0.14), rgba(37, 99, 235, 0.14));
 
   --color-xp: #f59e0b;
-  --color-coin: #eab308;
   --color-success: #16a34a;
   --color-danger: #dc2626;
-  --color-boss: #dc2626;
 
   --shadow-card: 0 10px 30px -12px rgba(76, 29, 149, 0.25);
   --shadow-pop: 0 18px 40px -14px rgba(37, 99, 235, 0.35);

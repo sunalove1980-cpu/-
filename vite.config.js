@@ -18,9 +18,9 @@ export default defineConfig({
       includeAssets: ['favicon.ico', 'icons/favicon-16.png', 'icons/favicon-32.png', 'icons/apple-touch-icon.png'],
       manifest: {
         id: base,
-        name: '건강 퀘스트',
-        short_name: '건강퀘스트',
-        description: '습관을 체크하면 경험치와 코인을 얻고 레벨이 오르는 게임형 건강 습관 관리 앱',
+        name: '감상노트 - 영화·책 기록',
+        short_name: '감상노트',
+        description: '내가 본 영화와 읽은 책의 줄거리, 별점, 인상 깊은 장면을 사진과 음성으로 기록하는 앱',
         lang: 'ko',
         start_url: base,
         scope: base,
@@ -44,7 +44,7 @@ export default defineConfig({
             urlPattern: ({ request }) => request.destination === 'image',
             handler: 'CacheFirst',
             options: {
-              cacheName: 'hq-images',
+              cacheName: 'gn-images',
               expiration: { maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },

@@ -1,20 +1,21 @@
 .reset-data {
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .reset-data__desc {
   font-size: 13px;
   color: var(--color-text-muted);
-  margin-bottom: 12px;
-  line-height: 1.5;
 }
 
-.reset-data__btn {
-  width: 100%;
-  padding: 12px;
+.reset-data__button {
+  align-self: flex-start;
+  padding: 10px 16px;
   border-radius: var(--radius-md);
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(220, 38, 38, 0.12);
   border: 1px solid var(--color-danger);
   color: var(--color-danger);
+  font-size: 13px;
   font-weight: 700;
 }

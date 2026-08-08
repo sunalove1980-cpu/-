@@ -1,9 +1,11 @@
 // 아이콘 소스 SVG를 필요한 크기의 PNG/파비콘으로 일괄 변환하는 1회성 빌드 스크립트
 import sharp from 'sharp';
-import { mkdirSync } from 'node:fs';
+import pngToIco from 'png-to-ico';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const outDir = fileURLToPath(new URL('../public/icons/', import.meta.url));
+const publicDir = fileURLToPath(new URL('../public/', import.meta.url));
 mkdirSync(outDir, { recursive: true });
 
 const jobs = [
@@ -25,3 +27,8 @@ for (const job of jobs) {
     .toFile(outPath);
   console.log('generated', job.out);
 }
+
+// favicon.ico는 16px/32px PNG를 함께 담아 브라우저 탭에서 선명하게 보이도록 한다.
+const icoBuffer = await pngToIco([outDir + 'favicon-16.png', outDir + 'favicon-32.png']);
+writeFileSync(publicDir + 'favicon.ico', icoBuffer);
+console.log('generated favicon.ico');

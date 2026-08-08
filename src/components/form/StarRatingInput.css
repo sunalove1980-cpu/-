@@ -1,0 +1,43 @@
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.star-rating__label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.star-rating__stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star-rating__star {
+  position: relative;
+  font-size: 30px;
+  line-height: 1;
+  min-height: auto;
+  padding: 2px;
+  color: var(--color-border);
+}
+
+.star-rating__star--full {
+  color: var(--color-xp, #f59e0b);
+}
+
+.star-rating__star--half {
+  background: linear-gradient(90deg, var(--color-xp, #f59e0b) 50%, var(--color-border) 50%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.star-rating__value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}

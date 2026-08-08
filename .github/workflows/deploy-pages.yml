@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [claude/health-quest-webapp-vnf6aq]
+    branches: [claude/media-log-pwa-app-dref4d]
   workflow_dispatch:
 
 permissions:
