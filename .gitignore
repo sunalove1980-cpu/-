@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Netlify CLI 로컬 사이트 연결 정보 (배포 시 자동 생성, 저장소에 넣을 필요 없음)
+.netlify
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
