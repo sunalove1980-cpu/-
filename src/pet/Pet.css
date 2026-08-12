@@ -1,0 +1,158 @@
+.pet-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+  filter: drop-shadow(0 6px 10px rgba(60, 40, 20, 0.18));
+}
+
+.pet-shadow {
+  fill: rgba(50, 30, 10, 0.16);
+}
+
+/* ---- 몸통 & 숨쉬기 ---- */
+.pet-body-wrap {
+  transform-origin: 100px 168px;
+  animation: pet-breathe 2.6s ease-in-out infinite;
+}
+.pet-svg--sleep .pet-body-wrap {
+  animation-duration: 3.6s;
+  transform: scaleY(0.94) translateY(4px);
+}
+.pet-svg--walk .pet-body-wrap {
+  animation: pet-breathe 0.7s ease-in-out infinite, pet-walk-bob 0.45s ease-in-out infinite;
+}
+.pet-svg--drink .pet-body-wrap {
+  animation-duration: 1.6s;
+  transform: translateY(6px);
+}
+.pet-svg--bounce .pet-body-wrap {
+  animation: pet-bounce 0.5s ease-in-out infinite;
+}
+.pet-svg--stretch .pet-body-wrap {
+  animation: pet-stretch 1.6s ease-in-out;
+}
+
+@keyframes pet-breathe {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.035); }
+}
+@keyframes pet-walk-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes pet-bounce {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  35% { transform: translateY(-16px) scaleY(1.05); }
+  55% { transform: translateY(0) scaleY(0.92); }
+}
+@keyframes pet-stretch {
+  0%, 100% { transform: scale(1, 1); }
+  40% { transform: scale(1.08, 0.92) translateY(4px); }
+}
+
+.pet-body { fill: #ffd9b8; }
+.pet-belly { fill: #fff1e0; }
+
+/* ---- 귀 ---- */
+.pet-ear ellipse:first-child { fill: #ffd9b8; }
+.pet-ear-inner { fill: #ffb488; }
+.pet-ear {
+  transform-origin: 0px 0px;
+  transition: transform 0.35s ease;
+}
+.pet-ear--left { transform-origin: -34px -34px; }
+.pet-ear--right { transform-origin: 34px -34px; }
+.pet-ear--droop.pet-ear--left { transform: rotate(-22deg) translateY(4px); }
+.pet-ear--droop.pet-ear--right { transform: rotate(22deg) translateY(4px); }
+
+/* ---- 얼굴 ---- */
+.pet-face { fill: #fff1e0; }
+.pet-cheek { fill: #ffb3ab; opacity: 0.75; }
+
+.pet-head {
+  transition: transform 0.5s ease;
+}
+
+/* ---- 눈 ---- */
+.pet-eyes path {
+  fill: none;
+  stroke: #4a2f1c;
+  stroke-width: 3.4;
+  stroke-linecap: round;
+}
+.pet-eye-white { fill: #ffffff; }
+.pet-eye-pupil { fill: #4a2f1c; }
+.pet-eye-shine { fill: #ffffff; }
+.pet-eyes--happy path { stroke-width: 3.8; }
+
+/* ---- 입 ---- */
+.pet-mouth {
+  stroke: #a35c30;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  fill: none;
+}
+.pet-mouth--yawn { fill: #a35c30; stroke: none; opacity: 0.85; }
+.pet-mouth--grin { fill: #a35c30; stroke: none; opacity: 0.9; }
+.pet-mouth--flat { stroke-width: 2.2; }
+
+/* ---- 팔 ---- */
+.pet-arm { fill: #ffd9b8; transition: transform 0.4s ease; transform-origin: center; }
+.pet-arm--left { transform-origin: 53px 112px; }
+.pet-arm--right { transform-origin: 147px 112px; }
+.pet-arm--up.pet-arm--left { transform: rotate(-40deg) translate(-2px, -6px); }
+.pet-arm--up.pet-arm--right { transform: rotate(40deg) translate(2px, -6px); }
+
+/* ---- 다리 (걸을 때만 흔들림) ---- */
+.pet-leg { fill: #ffc79b; transform-origin: center top; }
+.pet-svg--walk .pet-leg--left { animation: pet-leg-swing-left 0.45s ease-in-out infinite; }
+.pet-svg--walk .pet-leg--right { animation: pet-leg-swing-right 0.45s ease-in-out infinite; }
+@keyframes pet-leg-swing-left {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(-8deg); }
+}
+@keyframes pet-leg-swing-right {
+  0%, 100% { transform: translateY(-3px) rotate(8deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+}
+
+/* ---- 꼬리 ---- */
+.pet-tail { fill: #ffc79b; transform-origin: 0px 4px; }
+.pet-tail--wag { animation: pet-tail-wag 0.28s ease-in-out infinite; }
+@keyframes pet-tail-wag {
+  0%, 100% { transform: rotate(-14deg); }
+  50% { transform: rotate(14deg); }
+}
+
+/* ---- Zzz 거품 ---- */
+.pet-zzz__z {
+  font-size: 15px;
+  font-weight: 700;
+  fill: #7c8cff;
+  opacity: 0;
+  font-family: 'Comic Sans MS', 'Segoe UI', sans-serif;
+}
+.pet-zzz__z--1 { animation: pet-zzz-float 2.8s ease-in infinite; }
+.pet-zzz__z--2 { animation: pet-zzz-float 2.8s ease-in infinite 0.7s; }
+.pet-zzz__z--3 { animation: pet-zzz-float 2.8s ease-in infinite 1.4s; }
+@keyframes pet-zzz-float {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.6); }
+  15% { opacity: 0.9; }
+  80% { opacity: 0.15; }
+  100% { opacity: 0; transform: translate(14px, -30px) scale(1.15); }
+}
+
+/* ---- 하트 ---- */
+.pet-heart {
+  fill: #ff6f91;
+  opacity: 0;
+  animation: pet-heart-float 1.1s ease-out forwards;
+}
+.pet-heart--2 { animation-delay: 0.12s; }
+.pet-heart--3 { animation-delay: 0.24s; }
+@keyframes pet-heart-float {
+  0% { opacity: 0; transform: translateY(0) scale(0.4); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-34px) scale(1.1); }
+}

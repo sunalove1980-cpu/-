@@ -1,0 +1,156 @@
+.room {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.room__wall {
+  position: absolute;
+  inset: 0 0 40% 0;
+  background: linear-gradient(180deg, #ffe9d6 0%, #ffd9c2 55%, #f8c9a8 100%);
+}
+
+.room__floor {
+  position: absolute;
+  inset: 60% 0 0 0;
+  background: linear-gradient(180deg, #d9a06a 0%, #c98a52 55%, #b87641 100%);
+  box-shadow: inset 0 10px 18px rgba(70, 35, 10, 0.25);
+}
+.room__floor::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0px,
+    rgba(255, 255, 255, 0.05) 2px,
+    transparent 2px,
+    transparent 46px
+  );
+}
+
+.room__rug {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  width: 62%;
+  height: 22%;
+  transform: translateX(-50%) perspective(120px) rotateX(35deg);
+  background: radial-gradient(ellipse at center, #f6d8a8 0%, #efc98c 55%, #e0b878 100%);
+  border: 6px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  opacity: 0.85;
+}
+
+.room__window {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  width: 34%;
+  aspect-ratio: 1 / 1.1;
+  transform: translateX(-50%);
+  background: #fff7ea;
+  border: 6px solid #e8b98a;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(120, 70, 30, 0.15);
+}
+.room__window-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, #fff4d6 0%, #ffe2b0 55%, #ffcf94 100%);
+}
+.room__window-cross {
+  position: absolute;
+  background: #e8b98a;
+}
+.room__window-cross--v {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  transform: translateX(-50%);
+}
+.room__window-cross--h {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 6px;
+  transform: translateY(-50%);
+}
+
+.room__lights {
+  position: absolute;
+  top: 2%;
+  left: 4%;
+  right: 4%;
+  display: flex;
+  justify-content: space-between;
+}
+.room__light {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffe27a;
+  box-shadow: 0 0 6px 2px rgba(255, 210, 100, 0.7);
+  animation: room-light-twinkle 1.8s ease-in-out infinite;
+}
+@keyframes room-light-twinkle {
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.room__shelf {
+  position: absolute;
+  top: 14%;
+  right: 6%;
+  width: 20%;
+  height: 5%;
+  background: #c98a52;
+  border-radius: 4px;
+  box-shadow: 0 6px 10px rgba(90, 50, 15, 0.2);
+}
+.room__plant {
+  position: absolute;
+  bottom: 100%;
+  left: 10%;
+  width: 22%;
+  height: 220%;
+  background: radial-gradient(circle at 50% 20%, #8fd19e 0%, #5fae72 70%);
+  border-radius: 50% 50% 40% 40%;
+}
+.room__book {
+  position: absolute;
+  bottom: 100%;
+  height: 130%;
+  width: 14%;
+  border-radius: 2px 2px 0 0;
+}
+.room__book--a { left: 55%; background: #7c9ce0; }
+.room__book--b { left: 72%; background: #e08c8c; height: 110%; }
+
+.room__prop {
+  position: absolute;
+  transform: translate(-50%, -72%);
+  width: 30%;
+  max-width: 190px;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 8px rgba(60, 30, 10, 0.2));
+}
+.room__prop--bowl {
+  width: 16%;
+  max-width: 100px;
+}
+
+.room-bed__frame { fill: #c98a52; }
+.room-bed__blanket { fill: #8fb7e8; }
+.room-bed__blanket-trim { fill: #6f9bd6; }
+.room-bed__pillow { fill: #fffaf0; }
+.room-bed__leg { fill: #a3703f; }
+.room-bed__shadow { fill: rgba(60, 30, 10, 0.18); }
+
+.room-bowl__shadow { fill: rgba(60, 30, 10, 0.18); }
+.room-bowl__body { fill: #f4f4f4; }
+.room-bowl__rim { fill: none; stroke: #d8d8d8; stroke-width: 2.5; }
+.room-bowl__water { fill: #6fc3e8; }
+.room-bowl__shine { fill: rgba(255, 255, 255, 0.75); }

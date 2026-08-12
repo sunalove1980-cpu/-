@@ -1,0 +1,41 @@
+.pet-room-screen {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: #f8c9a8;
+  touch-action: manipulation;
+}
+
+.pet-anchor {
+  position: absolute;
+  width: 34vw;
+  max-width: 190px;
+  min-width: 120px;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transform-origin: 50% 92%;
+  transition: transform 0.12s ease-out, left 0.12s linear, top 0.12s linear;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  z-index: 4;
+}
+
+.pet-anchor:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 6px;
+  border-radius: 50%;
+}
+
+.pet-anchor--pressed .pet-svg {
+  animation: pet-tap-squish 0.16s ease-out;
+}
+
+@keyframes pet-tap-squish {
+  0% { transform: scale(1, 1); }
+  50% { transform: scale(1.08, 0.9); }
+  100% { transform: scale(1, 1); }
+}

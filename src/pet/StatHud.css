@@ -1,0 +1,41 @@
+.stat-hud {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top));
+  left: 14px;
+  right: 14px;
+  display: flex;
+  gap: 8px;
+  z-index: 5;
+}
+
+.stat-hud__item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(6px);
+  border-radius: 999px;
+  padding: 6px 10px;
+  box-shadow: 0 3px 8px rgba(60, 30, 10, 0.12);
+}
+
+.stat-hud__icon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.stat-hud__track {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(90, 55, 25, 0.15);
+  overflow: hidden;
+}
+
+.stat-hud__fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
