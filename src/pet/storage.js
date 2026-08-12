@@ -1,5 +1,6 @@
 // localStorage에 펫의 이름·스탯·경험치·오늘 기록·연속 실천일·마지막 접속 시간을 저장한다.
 // 로그인/서버 없이 이 브라우저에서만 유지되는 1단계 저장소.
+import { NEGLECT, clamp } from './constants.js';
 
 const STORAGE_KEY = 'pocketpet.save.v1';
 
@@ -64,6 +65,18 @@ export function saveState(state) {
   } catch {
     // 프라이빗 모드 등 localStorage를 쓸 수 없는 환경은 조용히 무시한다.
   }
+}
+
+// 앱을 완전히 꺼둔 채 오래 방치했다면, 돌아왔을 때 "그리워하던" 만큼 스탯을 한 번에 깎는다.
+// (실시간 방치 배율과는 별개로, 오프라인 시간에 대한 일회성 페널티)
+export function applyOfflineNeglect(stats, offlineMs) {
+  if (!offlineMs || offlineMs <= NEGLECT.graceMs) return stats;
+  const severity = clamp((offlineMs - NEGLECT.graceMs) / NEGLECT.offlinePenaltyRampMs, 0, 1);
+  return {
+    mood: clamp(stats.mood - severity * NEGLECT.offlineMoodPenaltyMax),
+    energy: clamp(stats.energy - severity * NEGLECT.offlineEnergyPenaltyMax),
+    hydration: clamp(stats.hydration - severity * NEGLECT.offlineHydrationPenaltyMax),
+  };
 }
 
 // 오늘 처음 기록하는 순간 연속 실천일을 갱신한다 (state를 직접 변경한다).

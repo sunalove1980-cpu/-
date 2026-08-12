@@ -2,175 +2,402 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
+  transition: background 1.5s ease;
+
+  /* 기본값 = 낮. 시간대별 클래스가 아래에서 이 변수들을 덮어써 하늘/초원 색을 바꾼다. */
+  --sky-top: #7fc3f2;
+  --sky-mid: #a9dcf5;
+  --sky-bottom: #d9f0f7;
+  --sun-color-in: #fff6cf;
+  --sun-color-out: #ffe9a8;
+  --hill-color: #bcdba3;
+  --meadow-top: #8cc774;
+  --meadow-mid: #74b562;
+  --meadow-bottom: #5fa350;
+  --cloud-opacity: 0.92;
+  --star-opacity: 0;
+  --window-glow: #ffe9a8;
 }
 
-.room__wall {
-  position: absolute;
-  inset: 0 0 40% 0;
-  background: linear-gradient(180deg, #ffe9d6 0%, #ffd9c2 55%, #f8c9a8 100%);
+/* 아침(5-8시): 부드러운 새벽빛 */
+.room--dawn {
+  --sky-top: #ffb37a; --sky-mid: #ffd9a0; --sky-bottom: #fff2d6;
+  --sun-color-in: #fff0c0; --sun-color-out: #ffcf8a;
+  --hill-color: #d8c98f;
+  --meadow-top: #a3c96a; --meadow-mid: #8ab558; --meadow-bottom: #6f9a48;
+  --cloud-opacity: 0.8;
 }
 
-.room__floor {
-  position: absolute;
-  inset: 60% 0 0 0;
-  background: linear-gradient(180deg, #d9a06a 0%, #c98a52 55%, #b87641 100%);
-  box-shadow: inset 0 10px 18px rgba(70, 35, 10, 0.25);
+/* 노을(17-19시): 주황빛으로 물든 하늘 */
+.room--sunset {
+  --sky-top: #ff9d6c; --sky-mid: #ffc978; --sky-bottom: #ffe3a8;
+  --sun-color-in: #fff0c0; --sun-color-out: #ff9d5c;
+  --hill-color: #c9a06a;
+  --meadow-top: #8aa85a; --meadow-mid: #6f9048; --meadow-bottom: #557038;
+  --cloud-opacity: 0.85;
+  --window-glow: #ffcf8a;
 }
-.room__floor::before {
+
+/* 저녁(19-21시): 보랏빛 황혼 */
+.room--evening {
+  --sky-top: #4d4f8c; --sky-mid: #7a6fa0; --sky-bottom: #c39bb0;
+  --sun-color-in: #ffe0b0; --sun-color-out: #ffb98a;
+  --hill-color: #6f6a8a;
+  --meadow-top: #4f6a48; --meadow-mid: #3f5a3a; --meadow-bottom: #2f4a2c;
+  --cloud-opacity: 0.55;
+  --star-opacity: 0.55;
+  --window-glow: #ffd98a;
+}
+
+/* 밤(21-5시): 별이 뜬 고요한 밤 */
+.room--night {
+  --sky-top: #0e1a3a; --sky-mid: #1c2c55; --sky-bottom: #2f3f6a;
+  --sun-color-in: #f2efe0; --sun-color-out: #dcd8f0;
+  --hill-color: #2a3a4a;
+  --meadow-top: #2a4a2e; --meadow-mid: #1f3a24; --meadow-bottom: #162a1a;
+  --cloud-opacity: 0.3;
+  --star-opacity: 1;
+  --window-glow: #ffd98a;
+}
+
+/* ---- 하늘 & 구름 (불멍처럼 편안하게 바라볼 수 있도록 아주 느리게 흐른다) ---- */
+.room__sky {
+  position: absolute;
+  inset: 0 0 44% 0;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 45%, var(--sky-bottom) 100%);
+  overflow: hidden;
+  transition: background 1.5s ease;
+}
+
+.room__stars {
+  position: absolute;
+  inset: 0;
+  opacity: var(--star-opacity);
+  transition: opacity 1.5s ease;
+}
+.room__star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  animation: room-star-twinkle 2.6s ease-in-out infinite;
+}
+.room__star:nth-child(odd) { animation-delay: -1.3s; }
+.room__star:nth-child(3n) { animation-duration: 3.4s; }
+@keyframes room-star-twinkle {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.room__sun {
+  position: absolute;
+  top: 6%;
+  right: 12%;
+  width: 15%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--sun-color-in) 0%, var(--sun-color-out) 55%, rgba(255, 233, 168, 0) 75%);
+  transition: background 1.5s ease;
+}
+
+.room__cloud {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 999px;
+  opacity: var(--cloud-opacity);
+  filter: drop-shadow(0 4px 6px rgba(60, 100, 140, 0.08));
+  transition: opacity 1.5s ease;
+}
+.room__cloud::before,
+.room__cloud::after {
   content: '';
   position: absolute;
-  inset: 0;
-  background-image: repeating-linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.05) 0px,
-    rgba(255, 255, 255, 0.05) 2px,
-    transparent 2px,
-    transparent 46px
-  );
+  background: inherit;
+  border-radius: 999px;
+}
+.room__cloud--1 {
+  top: 12%;
+  width: 22%;
+  height: 9%;
+  left: -30%;
+  animation: room-cloud-drift 46s linear infinite;
+}
+.room__cloud--1::before { width: 55%; height: 140%; top: -55%; left: 8%; }
+.room__cloud--1::after { width: 45%; height: 120%; top: -40%; right: 10%; }
+
+.room__cloud--2 {
+  top: 24%;
+  width: 16%;
+  height: 7%;
+  left: -25%;
+  animation: room-cloud-drift 60s linear infinite;
+  animation-delay: -20s;
+}
+.room__cloud--2::before { width: 60%; height: 130%; top: -50%; left: 10%; }
+.room__cloud--2::after { width: 40%; height: 110%; top: -35%; right: 12%; }
+
+.room__cloud--3 {
+  top: 5%;
+  width: 12%;
+  height: 5%;
+  left: -20%;
+  animation: room-cloud-drift 38s linear infinite;
+  animation-delay: -10s;
 }
 
-.room__rug {
-  position: absolute;
-  left: 50%;
-  bottom: 8%;
-  width: 62%;
-  height: 22%;
-  transform: translateX(-50%) perspective(120px) rotateX(35deg);
-  background: radial-gradient(ellipse at center, #f6d8a8 0%, #efc98c 55%, #e0b878 100%);
-  border: 6px solid rgba(255, 255, 255, 0.55);
-  border-radius: 50%;
-  opacity: 0.85;
+.room__cloud--4 {
+  top: 18%;
+  width: 26%;
+  height: 8%;
+  left: -32%;
+  animation: room-cloud-drift 70s linear infinite;
+  animation-delay: -45s;
+}
+.room__cloud--4::before { width: 50%; height: 150%; top: -60%; left: 12%; }
+.room__cloud--4::after { width: 35%; height: 110%; top: -30%; right: 14%; }
+
+@keyframes room-cloud-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(430%); }
 }
 
-.room__window {
+/* ---- 먼 언덕 ---- */
+.room__hills {
   position: absolute;
-  top: 10%;
-  left: 50%;
-  width: 34%;
-  aspect-ratio: 1 / 1.1;
-  transform: translateX(-50%);
-  background: #fff7ea;
-  border: 6px solid #e8b98a;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 8px 16px rgba(120, 70, 30, 0.15);
+  left: -5%;
+  right: -5%;
+  top: 36%;
+  height: 20%;
+  background: var(--hill-color);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  opacity: 0.8;
+  transition: background 1.5s ease;
 }
-.room__window-glow {
+
+/* ---- 숲 나무줄 (뒤/앞 두 켜로 깊이감) ---- */
+.room__treeline {
   position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 30%, #fff4d6 0%, #ffe2b0 55%, #ffcf94 100%);
-}
-.room__window-cross {
-  position: absolute;
-  background: #e8b98a;
-}
-.room__window-cross--v {
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  transform: translateX(-50%);
-}
-.room__window-cross--h {
-  top: 50%;
   left: 0;
   right: 0;
-  height: 6px;
-  transform: translateY(-50%);
-}
-
-.room__lights {
-  position: absolute;
-  top: 2%;
-  left: 4%;
-  right: 4%;
   display: flex;
+  align-items: flex-end;
   justify-content: space-between;
+  padding: 0 2%;
 }
-.room__light {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #ffe27a;
-  box-shadow: 0 0 6px 2px rgba(255, 210, 100, 0.7);
-  animation: room-light-twinkle 1.8s ease-in-out infinite;
+.room__treeline--far {
+  top: 40%;
+  height: 15%;
 }
-@keyframes room-light-twinkle {
-  0%, 100% { opacity: 0.45; transform: scale(0.9); }
-  50% { opacity: 1; transform: scale(1.15); }
+.room__treeline--near {
+  top: 46%;
+  height: 18%;
 }
+.room__treeline {
+  transition: filter 1.5s ease;
+}
+.room--evening .room__treeline { filter: brightness(0.72) saturate(0.85); }
+.room--night .room__treeline { filter: brightness(0.45) saturate(0.7); }
+.room--dawn .room__treeline,
+.room--sunset .room__treeline { filter: brightness(0.9) saturate(0.95); }
 
-.room__shelf {
-  position: absolute;
-  top: 14%;
-  right: 6%;
-  width: 20%;
-  height: 5%;
-  background: #c98a52;
-  border-radius: 4px;
-  box-shadow: 0 6px 10px rgba(90, 50, 15, 0.2);
+.room__tree {
+  position: relative;
+  display: block;
+  width: 11%;
+  height: 100%;
 }
-.room__plant {
+.room__tree::before {
+  content: '';
   position: absolute;
-  bottom: 100%;
-  left: 10%;
-  width: 22%;
-  height: 220%;
-  background: radial-gradient(circle at 50% 20%, #8fd19e 0%, #5fae72 70%);
-  border-radius: 50% 50% 40% 40%;
+  left: 50%;
+  bottom: 26%;
+  width: 100%;
+  aspect-ratio: 1 / 1.15;
+  transform: translateX(-50%);
+  border-radius: 50% 50% 44% 44%;
 }
-.room__book {
+.room__tree::after {
+  content: '';
   position: absolute;
-  bottom: 100%;
-  height: 130%;
+  left: 50%;
+  bottom: 0;
   width: 14%;
-  border-radius: 2px 2px 0 0;
+  height: 30%;
+  transform: translateX(-50%);
+  background: #9a6b3e;
+  border-radius: 2px;
 }
-.room__book--a { left: 55%; background: #7c9ce0; }
-.room__book--b { left: 72%; background: #e08c8c; height: 110%; }
 
+.room__tree--far::before { background: #9cc98a; }
+.room__tree--near::before { background: #6fae72; }
+.room__tree--near { width: 16%; }
+.room__tree--near:nth-child(2n)::before { background: #5f9d63; }
+.room__tree--far:nth-child(3n)::before { background: #8fc07e; }
+.room__tree--far:nth-child(odd) { height: 82%; }
+.room__tree--near:nth-child(even) { height: 90%; }
+
+/* ---- 초원 ---- */
+.room__meadow {
+  position: absolute;
+  inset: 56% 0 0 0;
+  background: linear-gradient(180deg, var(--meadow-top) 0%, var(--meadow-mid) 45%, var(--meadow-bottom) 100%);
+  box-shadow: inset 0 10px 16px rgba(30, 70, 20, 0.18);
+  transition: background 1.5s ease;
+}
+.room__meadow-texture {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.12) 1.5px, transparent 1.5px),
+    radial-gradient(circle, rgba(30, 60, 20, 0.12) 1.5px, transparent 1.5px);
+  background-size: 34px 34px, 46px 46px;
+  background-position: 0 0, 15px 20px;
+}
+
+/* ---- 나비 (은은한 배경 생명감) ---- */
+.room-butterfly {
+  position: absolute;
+  width: 22px;
+  filter: drop-shadow(0 2px 3px rgba(30, 40, 10, 0.15));
+}
+.room-butterfly__wing { fill: #ffb648; }
+.room-butterfly__wing--right { fill: #ff8fa3; }
+.room-butterfly__body { stroke: #4a2f1c; stroke-width: 1.4; }
+.room-butterfly__wings {
+  transform-origin: 15px 11px;
+  animation: room-butterfly-flap 0.35s ease-in-out infinite alternate;
+}
+@keyframes room-butterfly-flap {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0.7); }
+}
+.room-butterfly--a {
+  top: 48%;
+  left: -8%;
+  animation: room-butterfly-path-a 24s ease-in-out infinite;
+}
+.room-butterfly--b {
+  top: 58%;
+  left: -8%;
+  width: 18px;
+  animation: room-butterfly-path-b 30s ease-in-out infinite;
+  animation-delay: -12s;
+}
+@keyframes room-butterfly-path-a {
+  0% { transform: translate(0, 0); opacity: 0; }
+  6% { opacity: 1; }
+  25% { transform: translate(35vw, -6vh); }
+  50% { transform: translate(60vw, 4vh); }
+  75% { transform: translate(85vw, -8vh); }
+  94% { opacity: 1; }
+  100% { transform: translate(120vw, 0); opacity: 0; }
+}
+@keyframes room-butterfly-path-b {
+  0% { transform: translate(0, 0); opacity: 0; }
+  6% { opacity: 1; }
+  30% { transform: translate(30vw, 6vh); }
+  55% { transform: translate(55vw, -5vh); }
+  80% { transform: translate(90vw, 5vh); }
+  94% { opacity: 1; }
+  100% { transform: translate(120vw, 0); opacity: 0; }
+}
+
+/* ---- 장소 아이콘 배치 ---- */
 .room__prop {
   position: absolute;
-  transform: translate(-50%, -72%);
+  transform: translate(-50%, -74%);
   width: 30%;
   max-width: 190px;
   pointer-events: none;
-  filter: drop-shadow(0 6px 8px rgba(60, 30, 10, 0.2));
+  filter: drop-shadow(0 6px 8px rgba(20, 50, 15, 0.2));
 }
-.room__prop--bowl {
-  width: 16%;
-  max-width: 100px;
+.room__prop--cabin { width: 40%; max-width: 230px; }
+.room__prop--pond { width: 30%; max-width: 180px; }
+.room__prop--berry { width: 24%; max-width: 150px; }
+.room__prop--campfire { width: 20%; max-width: 130px; }
+
+/* ---- 오두막 ---- */
+.room-cabin__shadow { fill: rgba(20, 50, 15, 0.2); }
+.room-cabin__roof { fill: #9a5a3c; }
+.room-cabin__wall { fill: #d8ac74; }
+.room-cabin__wall-line { fill: rgba(120, 75, 30, 0.25); }
+.room-cabin__door { fill: #7a4a28; }
+.room-cabin__knob { fill: #ffd98a; }
+.room-cabin__window {
+  fill: var(--window-glow);
+  stroke: #9a5a3c;
+  stroke-width: 2;
+  transition: fill 1.5s ease, filter 1.5s ease;
 }
-.room__prop--food {
-  width: 20%;
-  max-width: 110px;
+.room--evening .room-cabin__window,
+.room--night .room-cabin__window {
+  filter: drop-shadow(0 0 5px rgba(255, 217, 138, 0.85));
 }
-.room__prop--cushion {
-  width: 22%;
-  max-width: 120px;
+.room-cabin__chimney { fill: #8a5236; }
+.room-cabin__smoke-puff {
+  fill: #fff;
+  opacity: 0;
+  animation: room-smoke-rise 4.5s ease-out infinite;
+}
+.room-cabin__smoke-puff--2 { animation-delay: 1.5s; }
+.room-cabin__smoke-puff--3 { animation-delay: 3s; }
+@keyframes room-smoke-rise {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.6); }
+  20% { opacity: 0.7; }
+  100% { opacity: 0; transform: translate(6px, -26px) scale(1.6); }
 }
 
-.room-bed__frame { fill: #c98a52; }
-.room-bed__blanket { fill: #8fb7e8; }
-.room-bed__blanket-trim { fill: #6f9bd6; }
-.room-bed__pillow { fill: #fffaf0; }
-.room-bed__leg { fill: #a3703f; }
-.room-bed__shadow { fill: rgba(60, 30, 10, 0.18); }
+/* ---- 연못 ---- */
+.room-pond__water { fill: #5fb6dd; }
+.room-pond__shine { fill: rgba(255, 255, 255, 0.5); }
+.room-pond__ripple {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.55);
+  stroke-width: 2;
+  animation: room-ripple-pulse 3.2s ease-in-out infinite;
+}
+@keyframes room-ripple-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.12); }
+}
+.room-pond__lily { fill: #6fae72; }
+.room-pond__lily-notch { fill: #5fb6dd; }
+.room-pond__reed {
+  fill: none;
+  stroke: #4f8f52;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
 
-.room-bowl__shadow { fill: rgba(60, 30, 10, 0.18); }
-.room-bowl__body { fill: #f4f4f4; }
-.room-bowl__rim { fill: none; stroke: #d8d8d8; stroke-width: 2.5; }
-.room-bowl__water { fill: #6fc3e8; }
-.room-bowl__shine { fill: rgba(255, 255, 255, 0.75); }
+/* ---- 산딸기 덤불 ---- */
+.room-berry__shadow { fill: rgba(20, 50, 15, 0.18); }
+.room-berry__bush { fill: #5f9d5f; }
+.room-berry__bush-hi { fill: #74b56f; }
+.room-berry__fruit { fill: #e0456f; }
 
-.room-food__shadow { fill: rgba(60, 30, 10, 0.18); }
-.room-food__plate { fill: #ffffff; }
-.room-food__plate-inner { fill: #f0e6d8; }
-.room-food__apple { fill: #ff8a5c; }
-.room-food__leaf { fill: #6fae72; }
-.room-food__veg { fill: #8fd19e; }
-
-.room-cushion__shadow { fill: rgba(60, 30, 10, 0.18); }
-.room-cushion__base { fill: #c9b8ff; }
-.room-cushion__pattern { fill: #ddd0ff; }
-.room-cushion__sparkle path { fill: #fff3b0; }
+/* ---- 모닥불 ---- */
+.room-campfire__shadow { fill: rgba(20, 50, 15, 0.2); }
+.room-campfire__log { fill: #7a4a28; }
+.room-campfire__log--b { fill: #6b3f22; }
+.room-campfire__flame-group {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: room-flame-flicker 0.9s ease-in-out infinite alternate;
+}
+.room-campfire__flame--outer { fill: #ff8a3c; opacity: 0.9; }
+.room-campfire__flame--inner { fill: #ffd166; }
+@keyframes room-flame-flicker {
+  from { transform: scale(1, 1) rotate(-1.5deg); }
+  to { transform: scale(1.06, 0.95) rotate(1.5deg); }
+}
+.room-campfire__ember {
+  fill: #ffb648;
+  opacity: 0;
+  animation: room-ember-rise 2.2s ease-in infinite;
+}
+.room-campfire__ember--2 { animation-delay: 0.7s; }
+.room-campfire__ember--3 { animation-delay: 1.4s; }
+@keyframes room-ember-rise {
+  0% { opacity: 0; transform: translateY(0); }
+  20% { opacity: 0.9; }
+  100% { opacity: 0; transform: translateY(-24px); }
+}

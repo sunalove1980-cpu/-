@@ -36,6 +36,23 @@ function Eyes({ state, pupilShift }) {
       </g>
     );
   }
+  if (state === 'teary') {
+    return (
+      <g className="pet-eyes pet-eyes--teary">
+        <ellipse cx="-16" cy="2" rx="6.5" ry="3" />
+        <ellipse cx="16" cy="2" rx="6.5" ry="3" />
+        <path className="pet-eyes__tear" d="M-17 7 C -20 13 -20 18 -17 18 C -14 18 -14 13 -17 7 Z" />
+      </g>
+    );
+  }
+  if (state === 'dreamy') {
+    return (
+      <g className="pet-eyes pet-eyes--dreamy">
+        <path d="M -22 1 Q -16 -4 -10 1" />
+        <path d="M 10 1 Q 16 -4 22 1" />
+      </g>
+    );
+  }
   const radius = state === 'wide' ? 9 : 7.4;
   return (
     <g className="pet-eyes pet-eyes--open">
@@ -111,6 +128,31 @@ function Pajama() {
   );
 }
 
+// 많이 외로울 때 머리 위에 뜨는 작은 먹구름 + 빗방울.
+function Gloom() {
+  return (
+    <g className="pet-gloom" aria-hidden="true" transform="translate(100 14)">
+      <g className="pet-gloom__sway">
+        <ellipse className="pet-gloom__cloud" cx="0" cy="0" rx="26" ry="12" />
+        <ellipse className="pet-gloom__cloud" cx="-14" cy="4" rx="14" ry="9" />
+        <ellipse className="pet-gloom__cloud" cx="14" cy="4" rx="14" ry="9" />
+        <path className="pet-gloom__drop pet-gloom__drop--1" d="M-10 16 C -13 22 -13 26 -10 26 C -7 26 -7 22 -10 16 Z" />
+        <path className="pet-gloom__drop pet-gloom__drop--2" d="M8 18 C 5 24 5 28 8 28 C 11 28 11 24 8 18 Z" />
+      </g>
+    </g>
+  );
+}
+
+// 건강기록 보상: 사용자가 고른 아이콘이 톡 떨어져 펫이 냠냠 받아먹고, "+XP"가 떠오른다.
+function Reward({ icon, xp }) {
+  return (
+    <g className="pet-reward" aria-hidden="true">
+      <text className="pet-reward__treat" x="100" y="50">{icon || '🍬'}</text>
+      {xp ? <text className="pet-reward__xp" x="100" y="34">{`+${xp} XP`}</text> : null}
+    </g>
+  );
+}
+
 function Mouth({ state }) {
   switch (state) {
     case 'yawn':
@@ -127,8 +169,15 @@ function Mouth({ state }) {
   }
 }
 
+// 펫이 왼쪽을 볼 때는 부모(pet-anchor)가 화면 전체를 scaleX(-1)로 뒤집는다.
+// 글자가 들어가는 요소(Zzz, 보상 텍스트)는 이 뒤집힘을 되돌려 항상 바르게 보이게 한다.
+function UprightText({ facing, children }) {
+  return <g transform={facing === -1 ? 'translate(200 0) scale(-1 1)' : undefined}>{children}</g>;
+}
+
 export default function Pet({
   pose = 'stand',
+  facing = 1,
   eyes = 'open',
   pupilShift = 0,
   mouth = 'smile',
@@ -136,6 +185,8 @@ export default function Pet({
   tailWag = false,
   showZzz = false,
   celebration = null,
+  reward = null,
+  gloom = false,
   wearingPajama = false,
   headTilt = 0,
 }) {
@@ -147,13 +198,21 @@ export default function Pet({
       aria-label="아기 펫"
     >
       {showZzz && (
-        <g className="pet-zzz" aria-hidden="true">
-          <text className="pet-zzz__z pet-zzz__z--1" x="118" y="46">Z</text>
-          <text className="pet-zzz__z pet-zzz__z--2" x="130" y="30">Z</text>
-          <text className="pet-zzz__z pet-zzz__z--3" x="144" y="14">Z</text>
-        </g>
+        <UprightText facing={facing}>
+          <g className="pet-zzz" aria-hidden="true">
+            <text className="pet-zzz__z pet-zzz__z--1" x="118" y="46">Z</text>
+            <text className="pet-zzz__z pet-zzz__z--2" x="130" y="30">Z</text>
+            <text className="pet-zzz__z pet-zzz__z--3" x="144" y="14">Z</text>
+          </g>
+        </UprightText>
       )}
+      {gloom && <Gloom />}
       {celebration && <Celebration shape={celebration.shape} color={celebration.color} />}
+      {reward && (
+        <UprightText facing={facing}>
+          <Reward icon={reward.icon} xp={reward.xp} />
+        </UprightText>
+      )}
 
       <ellipse className="pet-shadow" cx="100" cy="176" rx="46" ry="9" />
 

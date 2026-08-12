@@ -1,8 +1,16 @@
 .action-bar {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  padding: 8px 0 max(10px, env(safe-area-inset-bottom));
+}
+
+.action-bar__scroll {
+  display: flex;
   gap: 6px;
-  padding: 8px 10px max(10px, env(safe-area-inset-bottom));
+  overflow-x: auto;
+  padding: 0 10px;
+  scrollbar-width: none;
+}
+.action-bar__scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .action-bar__btn {
@@ -11,12 +19,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
   gap: 3px;
-  padding: 8px 2px;
+  width: 66px;
+  padding: 8px 4px;
   border: none;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.55);
-  color: #6b4a2e;
+  color: #3f2a10;
   font: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -28,7 +38,13 @@
 }
 
 .action-bar__btn--done {
-  background: rgba(255, 214, 140, 0.75);
+  background: rgba(255, 214, 140, 0.8);
+}
+
+.action-bar__btn--add {
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px dashed rgba(90, 55, 25, 0.35);
+  color: #6b4a2e;
 }
 
 .action-bar__icon {
@@ -42,6 +58,9 @@
   line-height: 1.2;
   text-align: center;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60px;
 }
 
 .action-bar__count {

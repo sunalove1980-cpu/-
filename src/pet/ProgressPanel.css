@@ -65,27 +65,47 @@
 
 .progress-panel__checklist {
   display: flex;
-  justify-content: space-between;
-  margin-top: 6px;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+
+.progress-panel__empty {
+  font-size: 11px;
+  color: #a3805c;
 }
 
 .progress-panel__check {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  font-size: 12px;
-  background: rgba(90, 55, 25, 0.1);
-  opacity: 0.45;
-  filter: grayscale(1);
-  transition: opacity 0.2s ease, filter 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  font-size: 13px;
+  background: rgba(255, 214, 140, 0.75);
+  animation: progress-check-pop 0.3s ease-out;
 }
 
-.progress-panel__check--done {
-  opacity: 1;
-  filter: none;
-  background: rgba(255, 214, 140, 0.75);
-  transform: scale(1.08);
+.progress-panel__check-count {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  min-width: 13px;
+  height: 13px;
+  padding: 0 2px;
+  border-radius: 999px;
+  background: #ff8a5c;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 13px;
+  text-align: center;
+}
+
+@keyframes progress-check-pop {
+  0% { transform: scale(0.3); opacity: 0; }
+  70% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
 }

@@ -2,16 +2,46 @@
 // - 매 틱(TICK_MS)마다 스탯을 변화시키고, 현재 행동을 진행시키거나 다음 행동을 뽑는다.
 // - 이동은 목표 지점까지 거리 기반으로 계산해 "실제로 걸어가는" 것처럼 보이게 한다.
 // - 눈 깜빡임은 메인 루프와 독립적인 랜덤 타이머로 돌아간다 (반복 GIF처럼 보이지 않도록).
-// - 건강기록 버튼(logAction)은 펫을 해당 장소로 걷게 한 뒤 축하 행동을 재생하고,
-//   경험치/오늘 기록/연속 실천일을 localStorage에 저장한다.
+// - 건강기록(logAction)은 펫에게 먹이를 주는 보상 연출을 재생하고, 경험치/오늘 기록/연속
+//   실천일을 localStorage에 저장한다. 사용자가 직접 추가한 행동(최대 20개)도 여기서 관리한다.
+// - 오래 방치하면 스탯 감소가 점점 빨라지고, 앱을 꺼둔 사이 지난 시간만큼 그리움 페널티가
+//   한 번에 반영된다. 화면을 드래그하면 펫이 손가락을 따라온다.
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MOVE_SPEED_PER_SEC, START_POS, STAT_RATES, TICK_MS, clamp, depthScale } from './constants.js';
+import {
+  FOLLOW_SPEED_PER_SEC,
+  MOVE_SPEED_PER_SEC,
+  START_POS,
+  STAT_RATES,
+  TICK_MS,
+  clamp,
+  depthScale,
+  neglectMultiplier,
+} from './constants.js';
 import { decideNextActivity, drinkDuration, sleepDuration } from './behaviors.js';
-import { getAction } from './actions.js';
-import { ACTION_XP, XP_PER_LEVEL, bumpStreak, loadState, saveState, todayKey } from './storage.js';
+import { MAX_ACTIONS, createCustomAction, findAction, loadActions, resolveAction, saveActions } from './actions.js';
+import { TAP_REACTION_KINDS } from './expression.js';
+import {
+  ACTION_XP,
+  XP_PER_LEVEL,
+  applyOfflineNeglect,
+  bumpStreak,
+  loadState,
+  saveState,
+  todayKey,
+} from './storage.js';
+
+const EYES_ALREADY_SET = new Set(['sleep', 'yawn', 'actionYawn', 'lonely', 'daydream']);
 
 function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function randomTapKind() {
+  return TAP_REACTION_KINDS[Math.floor(Math.random() * TAP_REACTION_KINDS.length)];
+}
+
+function markInteraction(sim) {
+  sim.lastInteractionAt = Date.now();
 }
 
 function formatLastSeen(ms) {
@@ -40,23 +70,30 @@ function snapshotFrom(sim) {
 }
 
 function buildArrivalActivity(walkActivity, stats) {
-  const { nextType, particle, pajama } = walkActivity;
+  const { nextType, particle, pajama, icon } = walkActivity;
   if (nextType === 'sleep') return { type: 'sleep', duration: sleepDuration(stats.energy), elapsed: 0 };
   if (nextType === 'drink') return { type: 'drink', duration: drinkDuration(stats.hydration), elapsed: 0 };
-  if (nextType === 'actionYawn') return { type: 'actionYawn', duration: 900, elapsed: 0, particle, pajama };
-  if (nextType === 'actionCelebrate') return { type: 'actionCelebrate', duration: 1600, elapsed: 0, particle, pajama };
+  if (nextType === 'actionYawn') return { type: 'actionYawn', duration: 900, elapsed: 0, particle, pajama, icon };
+  if (nextType === 'actionReceive') return { type: 'actionReceive', duration: 700, elapsed: 0, particle, pajama, icon };
   return { type: 'idle', duration: 1200 + Math.random() * 1600, elapsed: 0 };
 }
 
 function nextAfter(activity, sim) {
   if (activity.type === 'tapLook') {
-    return { type: 'tapHappy', duration: 1300 + Math.random() * 500, elapsed: 0 };
+    return { type: 'tapReact', kind: activity.kind, duration: 1300 + Math.random() * 500, elapsed: 0 };
   }
   if (activity.type === 'actionYawn') {
-    return { type: 'actionCelebrate', duration: 1600, elapsed: 0, particle: activity.particle, pajama: activity.pajama };
+    return {
+      type: 'actionReceive',
+      duration: 700,
+      elapsed: 0,
+      particle: activity.particle,
+      pajama: activity.pajama,
+      icon: activity.icon,
+    };
   }
-  if (activity.type === 'tapHappy' || activity.type === 'actionCelebrate') {
-    return decideNextActivity(sim.stats);
+  if (activity.type === 'actionReceive') {
+    return { type: 'actionCelebrate', duration: 1600, elapsed: 0, particle: activity.particle, pajama: activity.pajama };
   }
   if (activity.type === 'sleep') {
     if (sim.stats.energy < 82) {
@@ -70,25 +107,46 @@ function nextAfter(activity, sim) {
 
 function updateStats(sim, dt) {
   const { stats, activity } = sim;
+  const idleMs = Date.now() - sim.lastInteractionAt;
+  const neglect = neglectMultiplier(idleMs);
+
   stats.energy = clamp(
-    stats.energy + (activity.type === 'sleep' ? STAT_RATES.energyRegenPerSec : -STAT_RATES.energyDecayPerSec) * dt,
+    stats.energy +
+      (activity.type === 'sleep' ? STAT_RATES.energyRegenPerSec : -STAT_RATES.energyDecayPerSec * neglect) * dt,
   );
   stats.hydration = clamp(
     stats.hydration +
-      (activity.type === 'drink' ? STAT_RATES.hydrationRegenPerSec : -STAT_RATES.hydrationDecayPerSec) * dt,
+      (activity.type === 'drink' ? STAT_RATES.hydrationRegenPerSec : -STAT_RATES.hydrationDecayPerSec * neglect) *
+        dt,
   );
   const needsAreFine = stats.energy > 55 && stats.hydration > 55;
-  const isCelebrating = activity.type === 'tapHappy' || activity.type === 'actionCelebrate';
+  const isCelebrating = activity.type === 'tapReact' || activity.type === 'actionCelebrate';
   const moodDelta = isCelebrating
     ? STAT_RATES.moodRegenNearFullNeedsPerSec * 4
     : needsAreFine
       ? STAT_RATES.moodRegenNearFullNeedsPerSec
-      : -STAT_RATES.moodDecayPerSec;
+      : -STAT_RATES.moodDecayPerSec * neglect;
   stats.mood = clamp(stats.mood + moodDelta * dt);
 }
 
 function updateActivity(sim, dt) {
   const activity = sim.activity;
+
+  if (activity.type === 'follow') {
+    const step = FOLLOW_SPEED_PER_SEC * dt;
+    const dist = distance(sim.position, activity.target);
+    if (dist > 0.4) {
+      const dx = activity.target.x - sim.position.x;
+      const dy = activity.target.y - sim.position.y;
+      const move = Math.min(step, dist);
+      sim.position = {
+        x: sim.position.x + (dx / dist) * move,
+        y: sim.position.y + (dy / dist) * move,
+      };
+      if (Math.abs(dx) > 0.4) sim.facing = dx < 0 ? -1 : 1;
+    }
+    return;
+  }
 
   if (activity.type === 'walk') {
     const step = MOVE_SPEED_PER_SEC * dt;
@@ -134,7 +192,13 @@ function toSavedShape(sim) {
 
 export function usePetSimulation() {
   const loadedRef = useRef(null);
-  if (loadedRef.current === null) loadedRef.current = loadState();
+  if (loadedRef.current === null) {
+    const loaded = loadState();
+    // 앱을 꺼둔 사이 지난 시간만큼 "그리워하던" 페널티를 한 번에 반영한다.
+    const offlineMs = loaded.lastSeenAt ? Date.now() - loaded.lastSeenAt : 0;
+    loaded.stats = applyOfflineNeglect(loaded.stats, offlineMs);
+    loadedRef.current = loaded;
+  }
   const loaded = loadedRef.current;
 
   const lastSeenLabelRef = useRef(formatLastSeen(loaded.lastSeenAt));
@@ -144,6 +208,8 @@ export function usePetSimulation() {
     facing: 1,
     activity: { type: 'idle', duration: 2200, elapsed: 0 },
     stats: { ...loaded.stats },
+    lastInteractionAt: Date.now(),
+    isFollowing: false,
     progress: {
       petName: loaded.petName,
       xp: loaded.xp,
@@ -156,6 +222,13 @@ export function usePetSimulation() {
 
   const [render, setRender] = useState(() => snapshotFrom(simRef.current));
   const [isBlinking, setIsBlinking] = useState(false);
+
+  // 사용자가 정의한 건강기록 행동 목록 (기본 5종 + 커스텀, 최대 20개)
+  const [actions, setActions] = useState(() => loadActions());
+  const actionsRef = useRef(actions);
+  useEffect(() => {
+    actionsRef.current = actions;
+  }, [actions]);
 
   const persist = useCallback(() => {
     saveState(toSavedShape(simRef.current));
@@ -198,7 +271,7 @@ export function usePetSimulation() {
       blinkTimer = setTimeout(() => {
         if (cancelled) return;
         const type = simRef.current.activity.type;
-        if (type === 'sleep' || type === 'yawn' || type === 'actionYawn') {
+        if (EYES_ALREADY_SET.has(type)) {
           scheduleBlink();
           return;
         }
@@ -219,16 +292,43 @@ export function usePetSimulation() {
 
   const onTapPet = useCallback(() => {
     const sim = simRef.current;
-    if (sim.activity.type === 'tapLook' || sim.activity.type === 'tapHappy') return;
-    sim.activity = { type: 'tapLook', duration: 500, elapsed: 0 };
+    if (sim.activity.type === 'tapLook' || sim.activity.type === 'tapReact') return;
+    sim.activity = { type: 'tapLook', kind: randomTapKind(), duration: 500, elapsed: 0 };
     sim.stats.mood = clamp(sim.stats.mood + STAT_RATES.moodBoostOnPat);
+    markInteraction(sim);
+    setRender(snapshotFrom(sim));
+  }, []);
+
+  // 화면을 누른 채 드래그하면 펫이 손가락을 따라온다.
+  const startFollow = useCallback((point) => {
+    const sim = simRef.current;
+    sim.isFollowing = true;
+    sim.activity = { type: 'follow', target: point };
+    markInteraction(sim);
+    setRender(snapshotFrom(sim));
+  }, []);
+
+  const updateFollow = useCallback((point) => {
+    const sim = simRef.current;
+    if (!sim.isFollowing) return;
+    sim.activity.target = point;
+    markInteraction(sim);
+  }, []);
+
+  const endFollow = useCallback(() => {
+    const sim = simRef.current;
+    if (!sim.isFollowing) return;
+    sim.isFollowing = false;
+    sim.activity = { type: 'tapReact', kind: randomTapKind(), duration: 900 + Math.random() * 500, elapsed: 0 };
+    sim.stats.mood = clamp(sim.stats.mood + STAT_RATES.moodBoostOnPat * 0.6);
     setRender(snapshotFrom(sim));
   }, []);
 
   const logAction = useCallback(
-    (key) => {
-      const action = getAction(key);
+    (id) => {
+      const action = findAction(actionsRef.current, id);
       if (!action) return;
+      const resolved = resolveAction(action);
       const sim = simRef.current;
       const progress = sim.progress;
 
@@ -240,28 +340,47 @@ export function usePetSimulation() {
       }
 
       // 스탯에 직접 반영 (사용자의 건강행동 → 펫의 상태로 바로 연결)
-      for (const [statKey, delta] of Object.entries(action.statDelta)) {
+      for (const [statKey, delta] of Object.entries(resolved.statDelta)) {
         sim.stats[statKey] = clamp(sim.stats[statKey] + delta);
       }
 
       progress.xp += ACTION_XP;
-      progress.todayRecords[key] = (progress.todayRecords[key] || 0) + 1;
+      progress.todayRecords[id] = (progress.todayRecords[id] || 0) + 1;
       bumpStreak(progress);
+      markInteraction(sim);
 
-      // 하던 행동을 멈추고 해당 장소로 걸어가 축하 행동을 한다.
-      sim.activity = {
-        type: 'walk',
-        target: action.getTarget(),
-        nextType: action.pajama ? 'actionYawn' : 'actionCelebrate',
-        particle: action.particle,
-        pajama: Boolean(action.pajama),
-      };
+      // 장소가 있으면 걸어간 뒤, 없으면 그 자리에서 바로 먹이를 받아먹는 보상을 재생한다.
+      const target = resolved.getTarget ? resolved.getTarget() : null;
+      const firstStage = resolved.pajama ? 'actionYawn' : 'actionReceive';
+      const payload = { particle: resolved.particle, pajama: resolved.pajama, icon: action.icon };
+      sim.activity = target
+        ? { type: 'walk', target, nextType: firstStage, ...payload }
+        : buildArrivalActivity({ nextType: firstStage, ...payload }, sim.stats);
 
       setRender(snapshotFrom(sim));
       persist();
     },
     [persist],
   );
+
+  const addAction = useCallback((label, icon) => {
+    if (!label.trim()) return;
+    setActions((prev) => {
+      if (prev.length >= MAX_ACTIONS) return prev;
+      const next = [...prev, createCustomAction(label, icon)];
+      saveActions(next);
+      return next;
+    });
+  }, []);
+
+  const removeAction = useCallback((id) => {
+    setActions((prev) => {
+      if (prev.length <= 1) return prev; // 최소 1개는 남겨둔다
+      const next = prev.filter((action) => action.id !== id);
+      saveActions(next);
+      return next;
+    });
+  }, []);
 
   return {
     position: render.position,
@@ -271,6 +390,9 @@ export function usePetSimulation() {
     stats: render.stats,
     isBlinking,
     onTapPet,
+    startFollow,
+    updateFollow,
+    endFollow,
     petName: render.petName,
     level: render.level,
     xp: render.xp,
@@ -278,6 +400,9 @@ export function usePetSimulation() {
     streakDays: render.streakDays,
     todayRecords: render.todayRecords,
     lastSeenLabel: lastSeenLabelRef.current,
+    actions,
+    addAction,
+    removeAction,
     logAction,
   };
 }

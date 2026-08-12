@@ -13,8 +13,8 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      // 새 버전이 배포되면 즉시 덮어쓰지 않고 사용자에게 업데이트 여부를 물어본다 (UpdatePrompt 컴포넌트).
-      registerType: 'prompt',
+      // 새 버전이 배포되면 사용자가 "업데이트" 버튼을 누르지 않아도 곧바로 최신 버전을 받도록 자동 갱신한다.
+      registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icons/favicon-16.png', 'icons/favicon-32.png', 'icons/apple-touch-icon.png'],
       manifest: {
         id: base,
@@ -26,8 +26,8 @@ export default defineConfig({
         scope: base,
         display: 'standalone',
         orientation: 'portrait-primary',
-        background_color: '#f8c9a8',
-        theme_color: '#f8c9a8',
+        background_color: '#a9dcf5',
+        theme_color: '#a9dcf5',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },

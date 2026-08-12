@@ -32,6 +32,19 @@
 .pet-svg--stretch .pet-body-wrap {
   animation: pet-stretch 1.6s ease-in-out;
 }
+.pet-svg--sniff .pet-body-wrap {
+  animation: pet-sniff-bob 0.5s ease-in-out infinite;
+}
+.pet-svg--lonely .pet-body-wrap {
+  animation-duration: 3.2s;
+  transform: scaleY(0.92) translateY(6px);
+}
+.pet-svg--spin {
+  animation: pet-spin 0.7s ease-in-out;
+}
+.pet-svg--wiggle {
+  animation: pet-wiggle 0.55s ease-in-out;
+}
 
 @keyframes pet-breathe {
   0%, 100% { transform: scaleY(1); }
@@ -49,6 +62,21 @@
 @keyframes pet-stretch {
   0%, 100% { transform: scale(1, 1); }
   40% { transform: scale(1.08, 0.92) translateY(4px); }
+}
+@keyframes pet-sniff-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(3px) rotate(-2deg); }
+}
+@keyframes pet-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  40% { transform: rotate(200deg) scale(1.08); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+@keyframes pet-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(8deg); }
 }
 
 .pet-body { fill: #ffd9b8; }
@@ -85,6 +113,14 @@
 .pet-eye-pupil { fill: #4a2f1c; }
 .pet-eye-shine { fill: #ffffff; }
 .pet-eyes--happy path { stroke-width: 3.8; }
+.pet-eyes--teary ellipse { fill: #4a2f1c; }
+.pet-eyes__tear { fill: #6fa8e0; opacity: 0; animation: pet-tear-drop 1.8s ease-in infinite; }
+@keyframes pet-tear-drop {
+  0% { opacity: 0; transform: translateY(0) scale(0.7); }
+  15% { opacity: 0.9; }
+  80% { opacity: 0.3; }
+  100% { opacity: 0; transform: translateY(10px) scale(1); }
+}
 
 /* ---- 입 ---- */
 .pet-mouth {
@@ -168,3 +204,56 @@
 .pet-pajama__dot { fill: #fff6dd; opacity: 0.85; }
 .pet-pajama__cap path { fill: #8fb7e8; }
 .pet-pajama__pompom { fill: #fff6dd; }
+
+/* ---- 먹구름 (많이 외로울 때) ---- */
+.pet-gloom__sway {
+  animation: pet-gloom-sway 3s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes pet-gloom-sway {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-3px) rotate(2deg); }
+}
+.pet-gloom__cloud { fill: #97a2b8; opacity: 0.9; }
+.pet-gloom__drop {
+  fill: #6fa8e0;
+  opacity: 0;
+  animation: pet-gloom-drop 1.6s ease-in infinite;
+}
+.pet-gloom__drop--2 { animation-delay: 0.8s; }
+@keyframes pet-gloom-drop {
+  0% { opacity: 0; transform: translateY(0); }
+  20% { opacity: 0.9; }
+  90% { opacity: 0.2; }
+  100% { opacity: 0; transform: translateY(14px); }
+}
+
+/* ---- 건강기록 보상 (먹이를 냠냠 받아먹는 연출) ---- */
+.pet-reward__treat {
+  font-size: 26px;
+  text-anchor: middle;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pet-reward-fall 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes pet-reward-fall {
+  0% { opacity: 0; transform: translateY(-30px) scale(0.5) rotate(-20deg); }
+  55% { opacity: 1; transform: translateY(2px) scale(1.15) rotate(6deg); }
+  75% { transform: translateY(0) scale(0.9) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(4px) scale(0.2) rotate(0deg); }
+}
+.pet-reward__xp {
+  font-size: 14px;
+  font-weight: 700;
+  text-anchor: middle;
+  fill: #ff8a5c;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pet-reward-xp 1.3s ease-out 0.3s forwards;
+}
+@keyframes pet-reward-xp {
+  0% { opacity: 0; transform: translateY(6px) scale(0.7); }
+  30% { opacity: 1; transform: translateY(0) scale(1.05); }
+  100% { opacity: 0; transform: translateY(-24px) scale(1); }
+}
