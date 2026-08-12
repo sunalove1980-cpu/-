@@ -363,6 +363,32 @@ export function usePetSimulation() {
     [persist],
   );
 
+  // 오늘 이미 기록한 행동을 취소한다 (실수로 두 번 누르는 걸 막기 위해, 두 번째 탭부터는
+  // 바로 기록을 더 쌓지 않고 확인창을 거쳐 여기로 온다). 스탯/경험치 보정만 되돌리고
+  // 연속 실천일은 건드리지 않는다 (다른 행동을 이미 기록했을 수도 있어 되돌리기 애매함).
+  const cancelAction = useCallback(
+    (id) => {
+      const sim = simRef.current;
+      const progress = sim.progress;
+      if (!progress.todayRecords[id]) return;
+
+      const action = findAction(actionsRef.current, id);
+      if (action) {
+        const resolved = resolveAction(action);
+        for (const [statKey, delta] of Object.entries(resolved.statDelta)) {
+          sim.stats[statKey] = clamp(sim.stats[statKey] - delta);
+        }
+      }
+      progress.xp = Math.max(0, progress.xp - ACTION_XP);
+      delete progress.todayRecords[id];
+      markInteraction(sim);
+
+      setRender(snapshotFrom(sim));
+      persist();
+    },
+    [persist],
+  );
+
   const addAction = useCallback((label, icon) => {
     if (!label.trim()) return;
     setActions((prev) => {
@@ -404,5 +430,6 @@ export function usePetSimulation() {
     addAction,
     removeAction,
     logAction,
+    cancelAction,
   };
 }

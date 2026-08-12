@@ -1,0 +1,29 @@
+.sound-toggle {
+  position: absolute;
+  top: max(58px, calc(env(safe-area-inset-top) + 58px));
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 3px 8px rgba(60, 30, 10, 0.12);
+  font-size: 15px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 5;
+  transition: transform 0.12s ease-out, background 0.2s ease;
+}
+
+.sound-toggle:active {
+  transform: scale(0.9);
+}
+
+.sound-toggle--on {
+  background: rgba(255, 214, 140, 0.8);
+}

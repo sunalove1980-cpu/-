@@ -8,8 +8,12 @@ import StatHud from './StatHud.jsx';
 import ProgressPanel from './ProgressPanel.jsx';
 import ActionBar from './ActionBar.jsx';
 import ActionManager from './ActionManager.jsx';
+import ConfirmDialog from './ConfirmDialog.jsx';
+import SoundToggle from './SoundToggle.jsx';
 import { usePetSimulation } from './usePetSimulation.js';
+import { useAmbientSound } from './useAmbientSound.js';
 import { getExpression } from './expression.js';
+import { findAction } from './actions.js';
 import { FLOOR, clamp, getTimeOfDay } from './constants.js';
 import { pickNagMessage } from './nag.js';
 import './PetRoomScreen.css';
@@ -40,9 +44,15 @@ export default function PetRoomScreen() {
     addAction,
     removeAction,
     logAction,
+    cancelAction,
   } = usePetSimulation();
   const [isPressed, setIsPressed] = useState(false);
   const [managerOpen, setManagerOpen] = useState(false);
+  const { enabled: soundEnabled, toggle: toggleSound, supported: soundSupported } = useAmbientSound();
+  // 이미 기록한 행동을 다시 누르면 곧바로 더 쌓는 대신, 취소할지 먼저 물어본다
+  // (실수로 두 번 누르는 사고를 막기 위함).
+  const [pendingCancelId, setPendingCancelId] = useState(null);
+  const pendingCancelAction = pendingCancelId ? findAction(actions, pendingCancelId) : null;
 
   // 실제 시간에 맞춰 하늘/초원 색을 바꾼다 (아침/낮/노을/저녁/밤). 1분마다 확인하면 충분하다.
   const [timeOfDay, setTimeOfDay] = useState(() => getTimeOfDay());
@@ -147,6 +157,7 @@ export default function PetRoomScreen() {
       >
         <Room timeOfDay={timeOfDay} />
         <StatHud stats={stats} />
+        {soundSupported && <SoundToggle enabled={soundEnabled} onToggle={toggleSound} />}
 
         <div
           className="pet-position-anchor"
@@ -201,6 +212,7 @@ export default function PetRoomScreen() {
           actions={actions}
           todayRecords={todayRecords}
           onLog={logAction}
+          onRequestCancel={setPendingCancelId}
           onOpenManager={() => setManagerOpen(true)}
         />
       </div>
@@ -211,6 +223,20 @@ export default function PetRoomScreen() {
           onAdd={addAction}
           onRemove={removeAction}
           onClose={() => setManagerOpen(false)}
+        />
+      )}
+
+      {pendingCancelAction && (
+        <ConfirmDialog
+          title={`'${pendingCancelAction.label}' 기록을 취소할까요?`}
+          description="실수로 두 번 누르신 거라면 취소할 수 있어요. 스탯과 경험치가 원래대로 돌아갑니다."
+          confirmLabel="기록 취소하기"
+          cancelLabel="그대로 두기"
+          onConfirm={() => {
+            cancelAction(pendingCancelId);
+            setPendingCancelId(null);
+          }}
+          onDismiss={() => setPendingCancelId(null)}
         />
       )}
     </div>

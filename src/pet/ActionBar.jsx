@@ -3,22 +3,25 @@
 import { MAX_ACTIONS } from './actions.js';
 import './ActionBar.css';
 
-export default function ActionBar({ actions, todayRecords, onLog, onOpenManager }) {
+export default function ActionBar({ actions, todayRecords, onLog, onRequestCancel, onOpenManager }) {
   return (
     <div className="action-bar" role="group" aria-label="건강기록">
       <div className="action-bar__scroll">
         {actions.map((action) => {
           const count = todayRecords[action.id] || 0;
+          const done = count > 0;
           return (
             <button
               key={action.id}
               type="button"
-              className={`action-bar__btn${count > 0 ? ' action-bar__btn--done' : ''}`}
-              onClick={() => onLog(action.id)}
+              className={`action-bar__btn${done ? ' action-bar__btn--done' : ''}`}
+              // 이미 기록한 행동을 또 누르면 바로 더 쌓지 않고, 취소할지 먼저 물어본다
+              // (실수로 두 번 눌러 기록/경험치가 중복 쌓이는 걸 막기 위함).
+              onClick={() => (done ? onRequestCancel(action.id) : onLog(action.id))}
             >
               <span className="action-bar__icon" aria-hidden="true">{action.icon}</span>
               <span className="action-bar__label">{action.label}</span>
-              {count > 0 && <span className="action-bar__count">{count}</span>}
+              {done && <span className="action-bar__count">{count > 1 ? count : '✓'}</span>}
             </button>
           );
         })}
