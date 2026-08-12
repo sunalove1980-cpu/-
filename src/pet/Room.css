@@ -141,6 +141,14 @@
   width: 16%;
   max-width: 100px;
 }
+.room__prop--food {
+  width: 20%;
+  max-width: 110px;
+}
+.room__prop--cushion {
+  width: 22%;
+  max-width: 120px;
+}
 
 .room-bed__frame { fill: #c98a52; }
 .room-bed__blanket { fill: #8fb7e8; }
@@ -154,3 +162,15 @@
 .room-bowl__rim { fill: none; stroke: #d8d8d8; stroke-width: 2.5; }
 .room-bowl__water { fill: #6fc3e8; }
 .room-bowl__shine { fill: rgba(255, 255, 255, 0.75); }
+
+.room-food__shadow { fill: rgba(60, 30, 10, 0.18); }
+.room-food__plate { fill: #ffffff; }
+.room-food__plate-inner { fill: #f0e6d8; }
+.room-food__apple { fill: #ff8a5c; }
+.room-food__leaf { fill: #6fae72; }
+.room-food__veg { fill: #8fd19e; }
+
+.room-cushion__shadow { fill: rgba(60, 30, 10, 0.18); }
+.room-cushion__base { fill: #c9b8ff; }
+.room-cushion__pattern { fill: #ddd0ff; }
+.room-cushion__sparkle path { fill: #fff3b0; }

@@ -49,6 +49,68 @@ function Eyes({ state, pupilShift }) {
   );
 }
 
+// 건강기록을 축하할 때 뜨는 파티클. shape에 따라 다른 아이콘이 떠오른다
+// (물방울/별/사과/반짝임/달 — 탭 반응의 하트와 같은 자리, 같은 애니메이션을 재사용한다).
+function ParticleShape({ shape }) {
+  switch (shape) {
+    case 'droplet':
+      return <path d="M0 -12 C 7 -2 7 7 0 11 C -7 7 -7 -2 0 -12 Z" />;
+    case 'star':
+      return (
+        <path d="M0 -12 L3.4 -3.6 L12 -2.6 L5.6 3.4 L7.4 12 L0 7.4 L-7.4 12 L-5.6 3.4 L-12 -2.6 L-3.4 -3.6 Z" />
+      );
+    case 'apple':
+      return (
+        <g>
+          <circle cx="0" cy="1" r="9" />
+          <path className="pet-particle-leaf" d="M0 -8 C 2 -12 7 -12 7 -9 C 7 -6 2 -6 0 -8 Z" />
+        </g>
+      );
+    case 'sparkle':
+      return <path d="M0 -12 Q2 -2 12 0 Q2 2 0 12 Q-2 2 -12 0 Q-2 -2 0 -12 Z" />;
+    case 'moon':
+      return <path d="M6 -10 A 10 10 0 1 0 6 10 A 8 8 0 1 1 6 -10 Z" />;
+    case 'heart':
+    default:
+      return <path d="M0 8 C -4 2 -14 4 -14 -4 C -14 -12 -4 -10 0 -4 C 4 -10 14 -12 14 -4 C 14 4 4 2 0 8 Z" />;
+  }
+}
+
+function Celebration({ shape, color }) {
+  const spots = [
+    { x: 100, y: 40 },
+    { x: 70, y: 50 },
+    { x: 130, y: 52 },
+  ];
+  return (
+    <g className="pet-particles" aria-hidden="true" style={{ color }}>
+      {spots.map((spot, i) => (
+        <g key={i} className={`pet-particle pet-particle--${i + 1}`} transform={`translate(${spot.x} ${spot.y})`}>
+          <ParticleShape shape={shape} />
+        </g>
+      ))}
+    </g>
+  );
+}
+
+// 수면 기록 축하 때만 입는 잠옷: 배 위 잠옷 상의 + 머리 위 잠자리 모자.
+function Pajama() {
+  return (
+    <g className="pet-pajama" aria-hidden="true">
+      <path className="pet-pajama__top" d="M62 96 Q100 84 138 96 L134 150 Q100 160 66 150 Z" />
+      <circle className="pet-pajama__dot" cx="82" cy="112" r="2.6" />
+      <circle className="pet-pajama__dot" cx="100" cy="122" r="2.6" />
+      <circle className="pet-pajama__dot" cx="118" cy="112" r="2.6" />
+      <circle className="pet-pajama__dot" cx="90" cy="138" r="2.6" />
+      <circle className="pet-pajama__dot" cx="110" cy="138" r="2.6" />
+      <g className="pet-pajama__cap" transform="translate(100 30)">
+        <path d="M-24 6 Q0 -34 24 6 Q0 -6 -24 6 Z" />
+        <circle cx="24" cy="4" r="6" className="pet-pajama__pompom" />
+      </g>
+    </g>
+  );
+}
+
 function Mouth({ state }) {
   switch (state) {
     case 'yawn':
@@ -73,7 +135,8 @@ export default function Pet({
   earDroop = false,
   tailWag = false,
   showZzz = false,
-  showHearts = false,
+  celebration = null,
+  wearingPajama = false,
   headTilt = 0,
 }) {
   return (
@@ -90,13 +153,7 @@ export default function Pet({
           <text className="pet-zzz__z pet-zzz__z--3" x="144" y="14">Z</text>
         </g>
       )}
-      {showHearts && (
-        <g className="pet-hearts" aria-hidden="true">
-          <path className="pet-heart pet-heart--1" d="M100 40 C 96 34 86 36 86 44 C 86 52 100 60 100 60 C 100 60 114 52 114 44 C 114 36 104 34 100 40 Z" />
-          <path className="pet-heart pet-heart--2" d="M70 50 C 67 46 60 47 60 53 C 60 58 70 64 70 64 C 70 64 80 58 80 53 C 80 47 73 46 70 50 Z" />
-          <path className="pet-heart pet-heart--3" d="M130 52 C 127 48 120 49 120 55 C 120 60 130 66 130 66 C 130 66 140 60 140 55 C 140 49 133 48 130 52 Z" />
-        </g>
-      )}
+      {celebration && <Celebration shape={celebration.shape} color={celebration.color} />}
 
       <ellipse className="pet-shadow" cx="100" cy="176" rx="46" ry="9" />
 
@@ -115,6 +172,7 @@ export default function Pet({
       <g className="pet-body-wrap">
         <ellipse className="pet-body" cx="100" cy="118" rx="54" ry="48" />
         <ellipse className="pet-belly" cx="100" cy="132" rx="30" ry="22" />
+        {wearingPajama && <Pajama />}
 
         <g className={`pet-arm pet-arm--left${pose === 'stretch' ? ' pet-arm--up' : ''}`}>
           <ellipse cx="53" cy="120" rx="10" ry="15" />

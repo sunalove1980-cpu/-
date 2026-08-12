@@ -11,7 +11,8 @@ export function getExpression(activity, isBlinking) {
     earDroop: false,
     tailWag: false,
     showZzz: false,
-    showHearts: false,
+    celebration: null, // { shape, color } — 건강기록 축하 파티클
+    wearingPajama: false,
     headTilt: 0, // deg
     pose: 'stand', // stand | walk | sleep | drink | stretch | bounce
   };
@@ -27,6 +28,7 @@ export function getExpression(activity, isBlinking) {
       base.mouth = 'small';
       break;
     case 'yawn':
+    case 'actionYawn':
       base.eyes = 'squint';
       base.mouth = 'yawn';
       base.headTilt = -4;
@@ -62,9 +64,17 @@ export function getExpression(activity, isBlinking) {
     case 'tapHappy':
       base.eyes = 'happy';
       base.mouth = 'grin';
-      base.showHearts = true;
+      base.celebration = { shape: 'heart', color: '#ff6f91' };
       base.tailWag = true;
       base.pose = 'bounce';
+      break;
+    case 'actionCelebrate':
+      base.eyes = 'happy';
+      base.mouth = 'grin';
+      base.celebration = activity.particle ?? null;
+      base.tailWag = true;
+      base.pose = 'bounce';
+      base.wearingPajama = Boolean(activity.pajama);
       break;
     case 'idle':
     default:
@@ -73,7 +83,8 @@ export function getExpression(activity, isBlinking) {
   }
 
   // 자거나 하품할 땐 이미 눈이 감겨/찡그려 있으므로 깜빡임을 덧씌우지 않는다.
-  if (isBlinking && type !== 'sleep' && type !== 'yawn' && type !== 'tapHappy') {
+  const eyesAlreadyClosed = type === 'sleep' || type === 'yawn' || type === 'actionYawn' || type === 'tapHappy';
+  if (isBlinking && !eyesAlreadyClosed) {
     base.eyes = 'closed';
   }
 

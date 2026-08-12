@@ -143,16 +143,28 @@
   100% { opacity: 0; transform: translate(14px, -30px) scale(1.15); }
 }
 
-/* ---- 하트 ---- */
-.pet-heart {
-  fill: #ff6f91;
+/* ---- 축하 파티클 (탭 반응의 하트 / 건강기록의 물방울·별·사과·반짝임·달) ---- */
+.pet-particle {
   opacity: 0;
-  animation: pet-heart-float 1.1s ease-out forwards;
+  animation: pet-particle-float 1.1s ease-out forwards;
 }
-.pet-heart--2 { animation-delay: 0.12s; }
-.pet-heart--3 { animation-delay: 0.24s; }
-@keyframes pet-heart-float {
+.pet-particle path,
+.pet-particle circle {
+  fill: currentColor;
+}
+.pet-particle-leaf {
+  fill: #6fae72 !important;
+}
+.pet-particle--2 { animation-delay: 0.12s; }
+.pet-particle--3 { animation-delay: 0.24s; }
+@keyframes pet-particle-float {
   0% { opacity: 0; transform: translateY(0) scale(0.4); }
   25% { opacity: 1; }
   100% { opacity: 0; transform: translateY(-34px) scale(1.1); }
 }
+
+/* ---- 잠옷 (수면 기록 축하 때만) ---- */
+.pet-pajama__top { fill: #8fb7e8; opacity: 0.92; }
+.pet-pajama__dot { fill: #fff6dd; opacity: 0.85; }
+.pet-pajama__cap path { fill: #8fb7e8; }
+.pet-pajama__pompom { fill: #fff6dd; }

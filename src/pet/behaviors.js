@@ -2,7 +2,15 @@
 // 단순 반복 애니메이션이 아니라, 매번 상태(에너지/기분/수분)에 따라 확률이 달라지는
 // 가중치 룰렛 방식으로 다음 행동을 뽑는다.
 
-import { BED_APPROACH, BOWL_APPROACH, THRESHOLDS, jitterPoint, randRange, randomFloorPoint } from './constants.js';
+import {
+  BED_APPROACH,
+  BOWL_APPROACH,
+  THRESHOLDS,
+  isNightTime,
+  jitterPoint,
+  randRange,
+  randomFloorPoint,
+} from './constants.js';
 
 function weightedPick(entries) {
   const pool = entries.filter((entry) => entry.weight > 0);
@@ -36,22 +44,25 @@ export function decideNextActivity(stats) {
   const lowEnergy = energy < THRESHOLDS.lowEnergy;
   const lowHydration = hydration < THRESHOLDS.lowHydration;
   const lowMood = mood < THRESHOLDS.lowMood;
+  const night = isNightTime();
+
+  // 침대로 향할 가중치: 피곤할수록 커지고, 밤 시간대에는 크게 피곤하지 않아도
+  // 잠자리에 들 가능성이 높아진다 ("실제로 잠드는 행동은 밤 시간대의 자율행동").
+  const tiredBedWeight = lowEnergy ? Math.round((THRESHOLDS.lowEnergy - energy) * 2.2) + 12 : 0;
+  const bedWeight = night ? tiredBedWeight * 3 + (lowEnergy ? 0 : 16) : tiredBedWeight;
 
   const weights = [
     { key: 'idle', weight: lowMood ? 10 : 20 },
     { key: 'lookAround', weight: lowMood ? 8 : 15 },
     { key: 'walkRandom', weight: lowMood ? 8 : 16 },
-    { key: 'yawn', weight: lowEnergy ? 14 : 6 },
+    { key: 'yawn', weight: lowEnergy || night ? 14 : 6 },
     { key: 'stretch', weight: 6 },
     { key: 'sad', weight: lowMood ? Math.round((THRESHOLDS.lowMood - mood) * 1.6) + 10 : 0 },
     {
       key: 'walkToBowl',
       weight: lowHydration ? Math.round((THRESHOLDS.lowHydration - hydration) * 2.2) + 12 : 0,
     },
-    {
-      key: 'walkToBed',
-      weight: lowEnergy ? Math.round((THRESHOLDS.lowEnergy - energy) * 2.2) + 12 : 0,
-    },
+    { key: 'walkToBed', weight: bedWeight },
   ];
 
   const choice = weightedPick(weights) ?? 'idle';

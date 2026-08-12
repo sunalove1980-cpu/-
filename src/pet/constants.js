@@ -12,10 +12,14 @@ export const FLOOR = {
 // 가구 위치 (백분율 좌표). Room.jsx가 그림을 그리는 기준점이다.
 export const BED_SPOT = { x: 80, y: 62 };
 export const BOWL_SPOT = { x: 16, y: 78 };
+export const FOOD_SPOT = { x: 58, y: 84 };
+export const MIND_SPOT = { x: 24, y: 59 };
 
-// 펫이 실제로 걸어가서 멈추는 지점. 가구 바로 앞(약간 아래)이라 가구 위에 겹쳐 서지 않는다.
+// 펫이 실제로 걸어가서 멈추는 지점. 가구 바로 앞(옆)이라 가구 위에 겹쳐 서지 않는다.
 export const BED_APPROACH = { x: 71, y: 71 };
 export const BOWL_APPROACH = { x: 33, y: 79 };
+export const FOOD_APPROACH = { x: 42, y: 82 };
+export const MIND_APPROACH = { x: 38, y: 63 };
 
 // 펫이 활동을 시작하는 기본 위치
 export const START_POS = { x: 50, y: 74 };
@@ -75,4 +79,10 @@ export function jitterPoint(point, amount = 3) {
 // y 위치를 기준으로 원근 스케일 계산 (바닥 안쪽=작게, 바깥쪽=크게)
 export function depthScale(y) {
   return lerp(0.82, 1.1, (y - FLOOR.yMin) / (FLOOR.yMax - FLOOR.yMin));
+}
+
+// 밤 시간대(21시~7시)인지 여부. 자율행동에서 "진짜로 잠드는" 확률을 밤에 크게 높이는 데 쓴다.
+export function isNightTime(date = new Date()) {
+  const hour = date.getHours();
+  return hour >= 21 || hour < 7;
 }
