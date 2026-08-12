@@ -1,50 +1,45 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6D28D9"/>
-      <stop offset="55%" stop-color="#4C1D95"/>
-      <stop offset="100%" stop-color="#1D4ED8"/>
+    <linearGradient id="bg" x1="15%" y1="0%" x2="85%" y2="100%">
+      <stop offset="0%" stop-color="#ffe2ae"/>
+      <stop offset="55%" stop-color="#ffbd8a"/>
+      <stop offset="100%" stop-color="#ff9d6c"/>
     </linearGradient>
-    <linearGradient id="shield" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF"/>
-      <stop offset="100%" stop-color="#DCE6FF"/>
-    </linearGradient>
-    <linearGradient id="bolt" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FDE047"/>
-      <stop offset="100%" stop-color="#F59E0B"/>
-    </linearGradient>
-    <radialGradient id="glow" cx="35%" cy="25%" r="60%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    <radialGradient id="glow" cx="32%" cy="20%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
-  <!-- background -->
-  <rect width="512" height="512" fill="url(#bg)"/>
-  <rect width="512" height="512" fill="url(#glow)"/>
+  <!-- 배경: 앱의 노을빛 하늘 톤 -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="112" fill="url(#glow)"/>
 
-  <!-- shield -->
-  <path d="M256 96
-           L354 132
-           C354 132 356 268 256 336
-           C156 268 158 132 158 132
-           Z"
-        fill="url(#shield)" stroke="#FFFFFF" stroke-width="4" stroke-opacity="0.5"/>
+  <!-- 그림자 -->
+  <ellipse cx="256" cy="432" rx="128" ry="20" fill="#7a4020" opacity="0.16"/>
 
-  <!-- heart cut inside shield -->
-  <path d="M256 232
-           C256 202 228 186 208 200
-           C190 213 190 238 208 256
-           L256 300
-           L304 256
-           C322 238 322 213 304 200
-           C284 186 256 202 256 232 Z"
-        fill="#312E81" opacity="0.14"/>
+  <!-- 귀 -->
+  <ellipse cx="150" cy="150" rx="52" ry="70" fill="#ffd9b8"/>
+  <ellipse cx="150" cy="158" rx="26" ry="41" fill="#ffb488"/>
+  <ellipse cx="362" cy="150" rx="52" ry="70" fill="#ffd9b8"/>
+  <ellipse cx="362" cy="158" rx="26" ry="41" fill="#ffb488"/>
 
-  <!-- lightning bolt (energy) through heart -->
-  <path d="M270 176 L214 244 L244 244 L232 300 L296 226 L262 226 Z"
-        fill="url(#bolt)" stroke="#B45309" stroke-width="3" stroke-linejoin="round"/>
+  <!-- 얼굴 -->
+  <ellipse cx="256" cy="280" rx="164" ry="148" fill="#ffd9b8"/>
+  <ellipse cx="256" cy="298" rx="150" ry="128" fill="#fff1e0"/>
 
-  <!-- small sparkle star accent -->
-  <path d="M362 158 L368 174 L384 180 L368 186 L362 202 L356 186 L340 180 L356 174 Z" fill="#FFFFFF" opacity="0.9"/>
+  <!-- 볼 -->
+  <ellipse cx="150" cy="314" rx="30" ry="20" fill="#ffb3ab" opacity="0.85"/>
+  <ellipse cx="362" cy="314" rx="30" ry="20" fill="#ffb3ab" opacity="0.85"/>
+
+  <!-- 눈 -->
+  <circle cx="205" cy="272" r="27" fill="#ffffff"/>
+  <circle cx="307" cy="272" r="27" fill="#ffffff"/>
+  <circle cx="211" cy="279" r="15.5" fill="#4a2f1c"/>
+  <circle cx="313" cy="279" r="15.5" fill="#4a2f1c"/>
+  <circle cx="218" cy="267" r="5.5" fill="#ffffff"/>
+  <circle cx="320" cy="267" r="5.5" fill="#ffffff"/>
+
+  <!-- 입 -->
+  <path d="M230 322 Q256 348 282 322" stroke="#a35c30" stroke-width="10" stroke-linecap="round" fill="none"/>
 </svg>
