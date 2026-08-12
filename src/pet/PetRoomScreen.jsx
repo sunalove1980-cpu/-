@@ -11,7 +11,11 @@ import ActionManager from './ActionManager.jsx';
 import { usePetSimulation } from './usePetSimulation.js';
 import { getExpression } from './expression.js';
 import { FLOOR, clamp, getTimeOfDay } from './constants.js';
+import { pickNagMessage } from './nag.js';
 import './PetRoomScreen.css';
+
+const NAG_VISIBLE_MS = 6500;
+const NAG_COOLDOWN_MS = 8 * 60 * 1000; // 조건이 계속돼도 8분에 한 번 이상은 잔소리하지 않는다
 
 const DRAG_THRESHOLD_PX = 8;
 
@@ -54,6 +58,36 @@ export default function PetRoomScreen() {
   const activePointerIdRef = useRef(null);
 
   const expr = getExpression(activity, isBlinking);
+
+  // 시간대 + 오늘 기록 상황에 맞춰 펫이 잔소리 말풍선을 띄운다 (예: 너무 늦은 밤인데
+  // 아직 안 잠, 오후 늦도록 오늘 기록이 하나도 없음). ref로 최신 값을 들고 있다가
+  // 1분 간격 타이머에서 읽어, effect를 매번 다시 구독하지 않게 한다.
+  const [nagMessage, setNagMessage] = useState(null);
+  const nagCooldownRef = useRef(0);
+  const latestForNagRef = useRef();
+  latestForNagRef.current = { activityType: activity.type, todayRecords };
+
+  useEffect(() => {
+    let hideTimer;
+    const check = () => {
+      const now = Date.now();
+      if (now < nagCooldownRef.current) return;
+      const { activityType, todayRecords: records } = latestForNagRef.current;
+      const hasAnyRecordToday = Object.values(records).some((count) => count > 0);
+      const message = pickNagMessage({ hour: new Date().getHours(), activityType, hasAnyRecordToday });
+      if (message) {
+        setNagMessage(message);
+        nagCooldownRef.current = now + NAG_COOLDOWN_MS;
+        hideTimer = window.setTimeout(() => setNagMessage(null), NAG_VISIBLE_MS);
+      }
+    };
+    check();
+    const interval = setInterval(check, 60_000);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(hideTimer);
+    };
+  }, []);
 
   const pointToPercent = (clientX, clientY) => {
     const rect = stageRef.current.getBoundingClientRect();
@@ -114,33 +148,44 @@ export default function PetRoomScreen() {
         <Room timeOfDay={timeOfDay} />
         <StatHud stats={stats} />
 
-        <button
-          type="button"
-          className={`pet-anchor${isPressed ? ' pet-anchor--pressed' : ''}`}
+        <div
+          className="pet-position-anchor"
           style={{
             left: `${position.x}%`,
             top: `${position.y}%`,
-            transform: `translate(-50%, -92%) scale(${scale}) scaleX(${facing})`,
+            transform: `translate(-50%, -92%) scale(${scale})`,
           }}
-          onClick={handleTap}
-          aria-label="펫 쓰다듬기"
         >
-          <Pet
-            pose={expr.pose}
-            facing={facing}
-            eyes={expr.eyes}
-            pupilShift={expr.pupilShift}
-            mouth={expr.mouth}
-            earDroop={expr.earDroop}
-            tailWag={expr.tailWag}
-            showZzz={expr.showZzz}
-            celebration={expr.celebration}
-            reward={expr.reward}
-            gloom={expr.gloom}
-            wearingPajama={expr.wearingPajama}
-            headTilt={expr.headTilt}
-          />
-        </button>
+          {nagMessage && (
+            <div className="nag-bubble">
+              {nagMessage}
+              <span className="nag-bubble__tail" />
+            </div>
+          )}
+          <button
+            type="button"
+            className={`pet-anchor${isPressed ? ' pet-anchor--pressed' : ''}`}
+            style={{ transform: `scaleX(${facing})` }}
+            onClick={handleTap}
+            aria-label="펫 쓰다듬기"
+          >
+            <Pet
+              pose={expr.pose}
+              facing={facing}
+              eyes={expr.eyes}
+              pupilShift={expr.pupilShift}
+              mouth={expr.mouth}
+              earDroop={expr.earDroop}
+              tailWag={expr.tailWag}
+              showZzz={expr.showZzz}
+              celebration={expr.celebration}
+              reward={expr.reward}
+              gloom={expr.gloom}
+              wearingPajama={expr.wearingPajama}
+              headTilt={expr.headTilt}
+            />
+          </button>
+        </div>
       </div>
 
       <div className="pet-room-screen__footer">
