@@ -1,0 +1,23 @@
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  max-width: 84%;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: rgba(30, 20, 10, 0.82);
+  color: #fff8ee;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(20, 10, 5, 0.3);
+  z-index: 7;
+  pointer-events: none;
+  animation: toast-pop 0.2s ease-out;
+}
+
+@keyframes toast-pop {
+  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}

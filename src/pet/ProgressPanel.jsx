@@ -1,10 +1,22 @@
 // 액션 버튼 위에 얹히는 얇은 진행 상황 패널: 펫 이름/레벨, 건강 에너지 게이지,
-// 연속 실천일, 오늘 실천한 행동 목록을 보여준다.
-import { XP_PER_LEVEL } from './storage.js';
+// 연속 실천일, 날짜를 골라 볼 수 있는 그날의 실천 목록을 보여준다.
+import DateSwitcher from './DateSwitcher.jsx';
+import { XP_PER_LEVEL, todayKey } from './storage.js';
 import './ProgressPanel.css';
 
-export default function ProgressPanel({ petName, level, healthEnergy, streakDays, todayRecords, actions }) {
-  const doneToday = actions.filter((action) => (todayRecords[action.id] || 0) > 0);
+export default function ProgressPanel({
+  petName,
+  level,
+  healthEnergy,
+  streakDays,
+  selectedDate,
+  selectedDateRecords,
+  recordsByDate,
+  onSelectDate,
+  actions,
+}) {
+  const isToday = selectedDate === todayKey();
+  const doneOnDate = actions.filter((action) => (selectedDateRecords[action.id] || 0) > 0);
 
   return (
     <div className="progress-panel">
@@ -25,15 +37,24 @@ export default function ProgressPanel({ petName, level, healthEnergy, streakDays
         <span className="progress-panel__energy-value">{healthEnergy}/{XP_PER_LEVEL}</span>
       </div>
 
-      <div className="progress-panel__checklist" aria-label="오늘 실천한 행동">
-        {doneToday.length === 0 ? (
-          <span className="progress-panel__empty">오늘 아직 기록이 없어요. 아래 버튼을 눌러보세요!</span>
+      <div className="progress-panel__checklist-head">
+        <span className="progress-panel__checklist-label">
+          {isToday ? '오늘 실천한 행동' : '이 날 실천한 행동'}
+        </span>
+        <DateSwitcher selectedDate={selectedDate} onSelect={onSelectDate} recordsByDate={recordsByDate} />
+      </div>
+
+      <div className="progress-panel__checklist" aria-label="실천한 행동">
+        {doneOnDate.length === 0 ? (
+          <span className="progress-panel__empty">
+            {isToday ? '오늘 아직 기록이 없어요. 아래 버튼을 눌러보세요!' : '이 날은 기록이 없어요.'}
+          </span>
         ) : (
-          doneToday.map((action) => (
+          doneOnDate.map((action) => (
             <span key={action.id} className="progress-panel__check" title={action.label}>
               {action.icon}
-              {todayRecords[action.id] > 1 && (
-                <span className="progress-panel__check-count">{todayRecords[action.id]}</span>
+              {selectedDateRecords[action.id] > 1 && (
+                <span className="progress-panel__check-count">{selectedDateRecords[action.id]}</span>
               )}
             </span>
           ))

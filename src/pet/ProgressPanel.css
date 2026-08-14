@@ -1,4 +1,9 @@
 .progress-panel {
+  position: relative;
+  /* backdrop-filter가 새 스태킹 컨텍스트를 만들어서, 내부 드롭다운(z-index)이 이 박스
+     밖으로 못 빠져나가고 뒤에 있는 액션바 밑에 깔리는 문제가 있었다. 이 박스 자체를
+     액션바보다 위 레이어로 올려서, 안에 갇힌 드롭다운도 함께 위로 오게 한다. */
+  z-index: 2;
   margin: 8px 10px 0;
   padding: 8px 12px;
   border-radius: 16px;
@@ -63,11 +68,25 @@
   white-space: nowrap;
 }
 
+.progress-panel__checklist-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 9px;
+}
+
+.progress-panel__checklist-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #8a6a48;
+}
+
 .progress-panel__checklist {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  margin-top: 7px;
+  margin-top: 6px;
 }
 
 .progress-panel__empty {

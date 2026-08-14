@@ -2,8 +2,11 @@
 // - 매 틱(TICK_MS)마다 스탯을 변화시키고, 현재 행동을 진행시키거나 다음 행동을 뽑는다.
 // - 이동은 목표 지점까지 거리 기반으로 계산해 "실제로 걸어가는" 것처럼 보이게 한다.
 // - 눈 깜빡임은 메인 루프와 독립적인 랜덤 타이머로 돌아간다 (반복 GIF처럼 보이지 않도록).
-// - 건강기록(logAction)은 펫에게 먹이를 주는 보상 연출을 재생하고, 경험치/오늘 기록/연속
-//   실천일을 localStorage에 저장한다. 사용자가 직접 추가한 행동(최대 20개)도 여기서 관리한다.
+// - 건강기록(logAction)은 펫에게 먹이를 주는 보상 연출을 재생하고, 경험치/날짜별 기록을
+//   localStorage에 저장한다. 사용자가 직접 추가한 행동(최대 20개)도 여기서 관리한다.
+// - 자정을 넘겨서야 목표를 채우는 경우가 많아서, 기록은 "오늘"만이 아니라 원하는 날짜를
+//   골라 남길 수 있다 (selectedDate). 과거 날짜 기록은 경험치만 반영하고, 펫의 실시간
+//   상태(스탯)나 이동/축하 연출은 오늘 기록일 때만 재생한다.
 // - 오래 방치하면 스탯 감소가 점점 빨라지고, 앱을 꺼둔 사이 지난 시간만큼 그리움 페널티가
 //   한 번에 반영된다. 화면을 드래그하면 펫이 손가락을 따라온다.
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -24,13 +27,14 @@ import {
   ACTION_XP,
   XP_PER_LEVEL,
   applyOfflineNeglect,
-  bumpStreak,
+  computeStreak,
   loadState,
   saveState,
   todayKey,
 } from './storage.js';
 
 const EYES_ALREADY_SET = new Set(['sleep', 'yawn', 'actionYawn', 'lonely', 'daydream']);
+const TOAST_VISIBLE_MS = 2600;
 
 function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
@@ -53,6 +57,11 @@ function formatLastSeen(ms) {
   return `${Math.floor(diff / 86_400_000)}일 전`;
 }
 
+function formatShortDate(dateKey) {
+  const [, m, d] = dateKey.split('-');
+  return `${Number(m)}/${Number(d)}`;
+}
+
 function snapshotFrom(sim) {
   return {
     position: sim.position,
@@ -64,8 +73,7 @@ function snapshotFrom(sim) {
     xp: sim.progress.xp,
     level: 1 + Math.floor(sim.progress.xp / XP_PER_LEVEL),
     healthEnergy: sim.progress.xp % XP_PER_LEVEL,
-    streakDays: sim.progress.streakDays,
-    todayRecords: { ...sim.progress.todayRecords },
+    recordsByDate: sim.progress.recordsByDate,
   };
 }
 
@@ -182,10 +190,7 @@ function toSavedShape(sim) {
     petName: sim.progress.petName,
     stats: { ...sim.stats },
     xp: sim.progress.xp,
-    streakDays: sim.progress.streakDays,
-    lastRecordDateKey: sim.progress.lastRecordDateKey,
-    todayKey: sim.progress.todayKey,
-    todayRecords: { ...sim.progress.todayRecords },
+    recordsByDate: sim.progress.recordsByDate,
     lastSeenAt: Date.now(),
   };
 }
@@ -213,15 +218,16 @@ export function usePetSimulation() {
     progress: {
       petName: loaded.petName,
       xp: loaded.xp,
-      streakDays: loaded.streakDays,
-      lastRecordDateKey: loaded.lastRecordDateKey,
-      todayKey: loaded.todayKey,
-      todayRecords: { ...loaded.todayRecords },
+      recordsByDate: { ...loaded.recordsByDate },
     },
   });
 
   const [render, setRender] = useState(() => snapshotFrom(simRef.current));
   const [isBlinking, setIsBlinking] = useState(false);
+
+  // 지금 건강기록 버튼이 어느 날짜를 향하고 있는지. 기본은 오늘이지만, 자정을 넘겨서야
+  // 목표를 채우는 경우가 많아 사용자가 최근 며칠 중 원하는 날짜로 바꿀 수 있다.
+  const [selectedDate, setSelectedDate] = useState(() => todayKey());
 
   // 사용자가 정의한 건강기록 행동 목록 (기본 5종 + 커스텀, 최대 20개)
   const [actions, setActions] = useState(() => loadActions());
@@ -229,6 +235,16 @@ export function usePetSimulation() {
   useEffect(() => {
     actionsRef.current = actions;
   }, [actions]);
+
+  // 과거 날짜에 기록했을 때 보여줄 짧은 안내 토스트 (오늘 기록과 달리 펫이 반응하지 않으므로)
+  const [toastMessage, setToastMessage] = useState(null);
+  const toastTimerRef = useRef(null);
+  const showToast = useCallback((message) => {
+    setToastMessage(message);
+    window.clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = window.setTimeout(() => setToastMessage(null), TOAST_VISIBLE_MS);
+  }, []);
+  useEffect(() => () => window.clearTimeout(toastTimerRef.current), []);
 
   const persist = useCallback(() => {
     saveState(toSavedShape(simRef.current));
@@ -243,7 +259,7 @@ export function usePetSimulation() {
     return () => clearInterval(interval);
   }, []);
 
-  // 5초마다 + 탭이 백그라운드로 가거나 닫힐 때 자동 저장 (이름/상태/경험치/오늘 기록/접속 시간 유지)
+  // 5초마다 + 탭이 백그라운드로 가거나 닫힐 때 자동 저장 (이름/상태/경험치/기록/접속 시간 유지)
   useEffect(() => {
     const saveInterval = setInterval(persist, 5000);
     const handleVisibility = () => {
@@ -331,62 +347,65 @@ export function usePetSimulation() {
       const resolved = resolveAction(action);
       const sim = simRef.current;
       const progress = sim.progress;
+      const dateKey = selectedDate;
+      const isToday = dateKey === todayKey();
 
-      // 앱을 켜 둔 채로 자정을 넘겼다면 오늘 기록을 새로 시작한다.
-      const today = todayKey();
-      if (progress.todayKey !== today) {
-        progress.todayKey = today;
-        progress.todayRecords = {};
-      }
-
-      // 스탯에 직접 반영 (사용자의 건강행동 → 펫의 상태로 바로 연결)
-      for (const [statKey, delta] of Object.entries(resolved.statDelta)) {
-        sim.stats[statKey] = clamp(sim.stats[statKey] + delta);
-      }
-
+      if (!progress.recordsByDate[dateKey]) progress.recordsByDate[dateKey] = {};
+      progress.recordsByDate[dateKey][id] = (progress.recordsByDate[dateKey][id] || 0) + 1;
       progress.xp += ACTION_XP;
-      progress.todayRecords[id] = (progress.todayRecords[id] || 0) + 1;
-      bumpStreak(progress);
-      markInteraction(sim);
 
-      // 장소가 있으면 걸어간 뒤, 없으면 그 자리에서 바로 먹이를 받아먹는 보상을 재생한다.
-      const target = resolved.getTarget ? resolved.getTarget() : null;
-      const firstStage = resolved.pajama ? 'actionYawn' : 'actionReceive';
-      const payload = { particle: resolved.particle, pajama: resolved.pajama, icon: action.icon };
-      sim.activity = target
-        ? { type: 'walk', target, nextType: firstStage, ...payload }
-        : buildArrivalActivity({ nextType: firstStage, ...payload }, sim.stats);
+      if (isToday) {
+        // 오늘 기록은 펫의 실시간 상태에 바로 반영되고, 걸어가서 보상을 받는 연출도 재생한다.
+        for (const [statKey, delta] of Object.entries(resolved.statDelta)) {
+          sim.stats[statKey] = clamp(sim.stats[statKey] + delta);
+        }
+        markInteraction(sim);
+        const target = resolved.getTarget ? resolved.getTarget() : null;
+        const firstStage = resolved.pajama ? 'actionYawn' : 'actionReceive';
+        const payload = { particle: resolved.particle, pajama: resolved.pajama, icon: action.icon };
+        sim.activity = target
+          ? { type: 'walk', target, nextType: firstStage, ...payload }
+          : buildArrivalActivity({ nextType: firstStage, ...payload }, sim.stats);
+      } else {
+        // 지난 날짜 기록은 경험치만 채워주고, 펫을 실시간으로 움직이지는 않는다.
+        showToast(`${formatShortDate(dateKey)} 기록에 '${action.label}'을(를) 추가했어요`);
+      }
 
       setRender(snapshotFrom(sim));
       persist();
     },
-    [persist],
+    [persist, selectedDate, showToast],
   );
 
-  // 오늘 이미 기록한 행동을 취소한다 (실수로 두 번 누르는 걸 막기 위해, 두 번째 탭부터는
-  // 바로 기록을 더 쌓지 않고 확인창을 거쳐 여기로 온다). 스탯/경험치 보정만 되돌리고
-  // 연속 실천일은 건드리지 않는다 (다른 행동을 이미 기록했을 수도 있어 되돌리기 애매함).
+  // 이미 기록한 행동을 취소한다 (실수로 두 번 누르는 걸 막기 위해, 두 번째 탭부터는
+  // 바로 기록을 더 쌓지 않고 확인창을 거쳐 여기로 온다). 오늘 기록일 때만 스탯을 되돌리고,
+  // 지난 날짜 기록은 경험치만 되돌린다 (과거 시점 펫 상태는 따로 남아있지 않기 때문).
   const cancelAction = useCallback(
     (id) => {
       const sim = simRef.current;
       const progress = sim.progress;
-      if (!progress.todayRecords[id]) return;
+      const dateKey = selectedDate;
+      const isToday = dateKey === todayKey();
+      const dayRecords = progress.recordsByDate[dateKey];
+      if (!dayRecords || !dayRecords[id]) return;
 
-      const action = findAction(actionsRef.current, id);
-      if (action) {
-        const resolved = resolveAction(action);
-        for (const [statKey, delta] of Object.entries(resolved.statDelta)) {
-          sim.stats[statKey] = clamp(sim.stats[statKey] - delta);
+      if (isToday) {
+        const action = findAction(actionsRef.current, id);
+        if (action) {
+          const resolved = resolveAction(action);
+          for (const [statKey, delta] of Object.entries(resolved.statDelta)) {
+            sim.stats[statKey] = clamp(sim.stats[statKey] - delta);
+          }
         }
+        markInteraction(sim);
       }
       progress.xp = Math.max(0, progress.xp - ACTION_XP);
-      delete progress.todayRecords[id];
-      markInteraction(sim);
+      delete dayRecords[id];
 
       setRender(snapshotFrom(sim));
       persist();
     },
-    [persist],
+    [persist, selectedDate],
   );
 
   const addAction = useCallback((label, icon) => {
@@ -423,8 +442,12 @@ export function usePetSimulation() {
     level: render.level,
     xp: render.xp,
     healthEnergy: render.healthEnergy,
-    streakDays: render.streakDays,
-    todayRecords: render.todayRecords,
+    streakDays: computeStreak(render.recordsByDate),
+    recordsByDate: render.recordsByDate,
+    selectedDate,
+    selectDate: setSelectedDate,
+    selectedDateRecords: render.recordsByDate[selectedDate] || {},
+    toastMessage,
     lastSeenLabel: lastSeenLabelRef.current,
     actions,
     addAction,

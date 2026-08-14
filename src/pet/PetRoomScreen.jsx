@@ -10,12 +10,14 @@ import ActionBar from './ActionBar.jsx';
 import ActionManager from './ActionManager.jsx';
 import ConfirmDialog from './ConfirmDialog.jsx';
 import SoundToggle from './SoundToggle.jsx';
+import Toast from './Toast.jsx';
 import { usePetSimulation } from './usePetSimulation.js';
 import { useAmbientSound } from './useAmbientSound.js';
 import { getExpression } from './expression.js';
 import { findAction } from './actions.js';
 import { FLOOR, clamp, getTimeOfDay } from './constants.js';
 import { pickNagMessage } from './nag.js';
+import { todayKey } from './storage.js';
 import './PetRoomScreen.css';
 
 const NAG_VISIBLE_MS = 6500;
@@ -39,7 +41,11 @@ export default function PetRoomScreen() {
     level,
     healthEnergy,
     streakDays,
-    todayRecords,
+    recordsByDate,
+    selectedDate,
+    selectDate,
+    selectedDateRecords,
+    toastMessage,
     actions,
     addAction,
     removeAction,
@@ -75,15 +81,16 @@ export default function PetRoomScreen() {
   const [nagMessage, setNagMessage] = useState(null);
   const nagCooldownRef = useRef(0);
   const latestForNagRef = useRef();
-  latestForNagRef.current = { activityType: activity.type, todayRecords };
+  latestForNagRef.current = { activityType: activity.type, recordsByDate };
 
   useEffect(() => {
     let hideTimer;
     const check = () => {
       const now = Date.now();
       if (now < nagCooldownRef.current) return;
-      const { activityType, todayRecords: records } = latestForNagRef.current;
-      const hasAnyRecordToday = Object.values(records).some((count) => count > 0);
+      const { activityType, recordsByDate: records } = latestForNagRef.current;
+      // 잔소리는 지금 보고 있는 날짜가 아니라, 실제 "오늘" 기록 여부로 판단한다.
+      const hasAnyRecordToday = Object.values(records[todayKey()] || {}).some((count) => count > 0);
       const message = pickNagMessage({ hour: new Date().getHours(), activityType, hasAnyRecordToday });
       if (message) {
         setNagMessage(message);
@@ -197,6 +204,8 @@ export default function PetRoomScreen() {
             />
           </button>
         </div>
+
+        <Toast message={toastMessage} />
       </div>
 
       <div className="pet-room-screen__footer">
@@ -205,12 +214,15 @@ export default function PetRoomScreen() {
           level={level}
           healthEnergy={healthEnergy}
           streakDays={streakDays}
-          todayRecords={todayRecords}
+          selectedDate={selectedDate}
+          selectedDateRecords={selectedDateRecords}
+          recordsByDate={recordsByDate}
+          onSelectDate={selectDate}
           actions={actions}
         />
         <ActionBar
           actions={actions}
-          todayRecords={todayRecords}
+          selectedDateRecords={selectedDateRecords}
           onLog={logAction}
           onRequestCancel={setPendingCancelId}
           onOpenManager={() => setManagerOpen(true)}
@@ -229,7 +241,11 @@ export default function PetRoomScreen() {
       {pendingCancelAction && (
         <ConfirmDialog
           title={`'${pendingCancelAction.label}' 기록을 취소할까요?`}
-          description="실수로 두 번 누르신 거라면 취소할 수 있어요. 스탯과 경험치가 원래대로 돌아갑니다."
+          description={
+            selectedDate === todayKey()
+              ? '실수로 두 번 누르신 거라면 취소할 수 있어요. 스탯과 경험치가 원래대로 돌아갑니다.'
+              : '실수로 두 번 누르신 거라면 취소할 수 있어요. 경험치가 원래대로 돌아갑니다.'
+          }
           confirmLabel="기록 취소하기"
           cancelLabel="그대로 두기"
           onConfirm={() => {

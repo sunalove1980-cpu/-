@@ -1,5 +1,10 @@
-// localStorage에 펫의 이름·스탯·경험치·오늘 기록·연속 실천일·마지막 접속 시간을 저장한다.
+// localStorage에 펫의 이름·스탯·경험치·날짜별 건강기록·마지막 접속 시간을 저장한다.
 // 로그인/서버 없이 이 브라우저에서만 유지되는 1단계 저장소.
+//
+// 건강기록은 "오늘"만이 아니라 날짜별(recordsByDate)로 저장한다. 자정을 넘겨서야
+// 어제 목표를 다 채우는 경우가 많아서, 사용자가 날짜를 직접 골라 그 날짜의 기록에
+// 더하거나 취소할 수 있어야 하기 때문이다. 연속 실천일은 저장된 숫자가 아니라
+// 이 날짜별 기록에서 매번 다시 계산한다 (과거 날짜를 나중에 채워도 정확히 반영되도록).
 import { NEGLECT, clamp } from './constants.js';
 
 const STORAGE_KEY = 'pocketpet.save.v1';
@@ -7,6 +12,7 @@ const STORAGE_KEY = 'pocketpet.save.v1';
 export const XP_PER_LEVEL = 100;
 export const ACTION_XP = 20;
 export const DEFAULT_PET_NAME = '몽이';
+export const PAST_DAYS_SELECTABLE = 7; // 오늘 포함, 며칠 전까지 기록을 고쳐 쓸 수 있는지
 
 export function todayKey(date = new Date()) {
   const y = date.getFullYear();
@@ -20,15 +26,43 @@ export function yesterdayKeyOf(key) {
   return todayKey(new Date(y, m - 1, d - 1));
 }
 
+// 오늘부터 (count-1)일 전까지의 날짜 키 목록 (최신 순: 오늘, 어제, 그 전날 ...).
+export function recentDateKeys(count = PAST_DAYS_SELECTABLE, from = new Date()) {
+  const keys = [];
+  let key = todayKey(from);
+  for (let i = 0; i < count; i++) {
+    keys.push(key);
+    key = yesterdayKeyOf(key);
+  }
+  return keys;
+}
+
+function hasAnyRecord(records) {
+  return Boolean(records) && Object.values(records).some((count) => count > 0);
+}
+
+// 오늘(또는 기준일)부터 거꾸로 훑어, 끊기지 않고 이어진 날의 수를 센다.
+// 기준일에 아직 기록이 없어도 "오늘은 아직 안 끝났으니" 어제까지의 연속 기록은 유지해서 보여준다.
+export function computeStreak(recordsByDate, from = new Date()) {
+  let cursor = todayKey(from);
+  if (!hasAnyRecord(recordsByDate[cursor])) {
+    cursor = yesterdayKeyOf(cursor);
+  }
+  let streak = 0;
+  const SAFETY_CAP = 20_000; // 수십 년치 사용도 안전하게 커버하는 상한 (무한루프 방지용)
+  while (hasAnyRecord(recordsByDate[cursor]) && streak < SAFETY_CAP) {
+    streak += 1;
+    cursor = yesterdayKeyOf(cursor);
+  }
+  return streak;
+}
+
 function defaultState() {
   return {
     petName: DEFAULT_PET_NAME,
     stats: { energy: 78, hydration: 72, mood: 84 },
     xp: 0,
-    streakDays: 0,
-    lastRecordDateKey: null,
-    todayKey: todayKey(),
-    todayRecords: {},
+    recordsByDate: {},
     lastSeenAt: null,
   };
 }
@@ -44,13 +78,11 @@ export function loadState() {
       ...fallback,
       ...saved,
       stats: { ...fallback.stats, ...saved.stats },
-      todayRecords: { ...saved.todayRecords },
+      recordsByDate: { ...saved.recordsByDate },
     };
-    // 앱을 닫은 사이 날짜가 바뀌었다면 "오늘 기록"만 비운다 (연속일 계산은 실제 기록 시점에 처리).
-    const today = todayKey();
-    if (merged.todayKey !== today) {
-      merged.todayKey = today;
-      merged.todayRecords = {};
+    // 이전 버전(오늘 기록만 저장하던 저장소)에서 넘어온 데이터를 날짜별 기록으로 옮겨온다.
+    if (!saved.recordsByDate && saved.todayKey && saved.todayRecords) {
+      merged.recordsByDate = { [saved.todayKey]: { ...saved.todayRecords } };
     }
     return merged;
   } catch {
@@ -77,17 +109,4 @@ export function applyOfflineNeglect(stats, offlineMs) {
     energy: clamp(stats.energy - severity * NEGLECT.offlineEnergyPenaltyMax),
     hydration: clamp(stats.hydration - severity * NEGLECT.offlineHydrationPenaltyMax),
   };
-}
-
-// 오늘 처음 기록하는 순간 연속 실천일을 갱신한다 (state를 직접 변경한다).
-export function bumpStreak(state) {
-  const today = todayKey();
-  if (state.lastRecordDateKey === today) {
-    // 오늘 이미 기록이 있었다면 유지
-  } else if (state.lastRecordDateKey && yesterdayKeyOf(today) === state.lastRecordDateKey) {
-    state.streakDays += 1;
-  } else {
-    state.streakDays = 1;
-  }
-  state.lastRecordDateKey = today;
 }

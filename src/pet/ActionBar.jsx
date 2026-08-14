@@ -3,12 +3,12 @@
 import { MAX_ACTIONS } from './actions.js';
 import './ActionBar.css';
 
-export default function ActionBar({ actions, todayRecords, onLog, onRequestCancel, onOpenManager }) {
+export default function ActionBar({ actions, selectedDateRecords, onLog, onRequestCancel, onOpenManager }) {
   return (
     <div className="action-bar" role="group" aria-label="건강기록">
       <div className="action-bar__scroll">
         {actions.map((action) => {
-          const count = todayRecords[action.id] || 0;
+          const count = selectedDateRecords[action.id] || 0;
           const done = count > 0;
           return (
             <button
