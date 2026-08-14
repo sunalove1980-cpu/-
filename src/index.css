@@ -25,6 +25,21 @@ body {
   height: 100%;
 }
 
+/* 컴퓨터처럼 넓은 화면에서는 앱을 화면 전체에 늘리지 않고, 실제 폰 화면 비율의
+   프레임 안에 담아 가운데 정렬한다 (데모/예시로 보여주기 좋도록). */
+@media (min-width: 640px) {
+  body {
+    background: #14161b;
+  }
+
+  #root {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3dvh 0;
+  }
+}
+
 button {
   font: inherit;
   color: inherit;
