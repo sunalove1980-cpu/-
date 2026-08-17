@@ -20,7 +20,7 @@ export default function ArchivePage() {
         setBySession(grouped);
         if (sessionList[0]) setSelected(sessionList[0].id);
       })
-      .catch((err) => setError(err.message));
+      .catch((err) => setError(`불러오기 실패: ${err.message}`));
   }, []);
 
   const groupedByDate = useMemo(() => {
@@ -91,7 +91,7 @@ export default function ArchivePage() {
       });
       setSelected(remaining[0]?.id ?? null);
     } catch (err) {
-      setError(err.message);
+      setError(`삭제 실패: ${err.message}`);
     }
   };
 
@@ -102,7 +102,7 @@ export default function ArchivePage() {
         <h1>지난 기록</h1>
       </header>
 
-      {error && <p className="error-banner">불러오기 실패: {error}</p>}
+      {error && <p className="error-banner">{error}</p>}
       {!sessions && !error && <p className="archive-loading">기록을 불러오는 중…</p>}
       {sessions && sessions.length === 0 && <p className="archive-loading">아직 저장된 기록이 없습니다.</p>}
 
