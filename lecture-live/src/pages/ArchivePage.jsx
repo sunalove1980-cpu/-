@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Download, FileSpreadsheet, Heart, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Download, FileSpreadsheet, Heart, MessageCircle, Trash2 } from 'lucide-react';
 import { buildThread, fetchAllGroupedBySession } from '../lib/messages';
-import { fetchAllSessions } from '../lib/sessions';
+import { deleteSession, fetchAllSessions } from '../lib/sessions';
 import { formatDateKey, formatTime } from '../lib/dates';
 import { colorForName } from '../lib/colors';
 
@@ -77,6 +77,24 @@ export default function ArchivePage() {
     download(`lecture-${currentSession.dateKey}-${selected}.csv`, `﻿${rows.join('\n')}`, 'text/csv');
   };
 
+  const handleDelete = async () => {
+    if (!currentSession) return;
+    if (!window.confirm(`"${currentSession.name || '이름 없는 세션'}" 세션과 그 안의 글을 모두 삭제할까요? 되돌릴 수 없습니다.`)) return;
+    try {
+      await deleteSession(currentSession.id);
+      const remaining = sessions.filter((s) => s.id !== currentSession.id);
+      setSessions(remaining);
+      setBySession((prev) => {
+        const next = new Map(prev);
+        next.delete(currentSession.id);
+        return next;
+      });
+      setSelected(remaining[0]?.id ?? null);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   return (
     <div className="archive">
       <header className="archive-header">
@@ -120,6 +138,9 @@ export default function ArchivePage() {
                     </button>
                     <button type="button" onClick={downloadCsv}>
                       <FileSpreadsheet size={14} strokeWidth={2} /> CSV
+                    </button>
+                    <button type="button" className="archive-delete" onClick={handleDelete}>
+                      <Trash2 size={14} strokeWidth={2} /> 삭제
                     </button>
                   </div>
                 </div>

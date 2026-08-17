@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Archive, ChevronRight, Loader2, Radio } from 'lucide-react';
-import { createSession, subscribeRecentSessions } from '../lib/sessions';
+import { Archive, ChevronRight, Loader2, Radio, Trash2 } from 'lucide-react';
+import { createSession, deleteSession, subscribeRecentSessions } from '../lib/sessions';
 import { formatDateKey, formatTime, todayKey } from '../lib/dates';
 
 // 첫 화면: 새 세션을 시작하거나 최근 세션을 이어서 열거나, 지난 기록을 본다.
@@ -27,6 +27,17 @@ export default function HomePage() {
     } catch (err) {
       setError(err.message);
       setCreating(false);
+    }
+  };
+
+  const handleDelete = async (e, session) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!window.confirm(`"${session.name || '이름 없는 세션'}" 세션과 그 안의 글을 모두 삭제할까요?`)) return;
+    try {
+      await deleteSession(session.id);
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -75,6 +86,14 @@ export default function HomePage() {
                       {formatDateKey(s.dateKey)} · {formatTime(s.createdAt) || '방금 생성'}
                     </span>
                   </span>
+                  <button
+                    type="button"
+                    className="home-row-delete"
+                    title="세션 삭제"
+                    onClick={(e) => handleDelete(e, s)}
+                  >
+                    <Trash2 size={15} strokeWidth={2} />
+                  </button>
                   <ChevronRight className="icon home-row-chevron" size={16} strokeWidth={2} />
                 </a>
               ))}

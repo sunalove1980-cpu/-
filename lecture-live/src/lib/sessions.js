@@ -19,11 +19,14 @@ import {
   query,
   serverTimestamp,
   updateDoc,
+  where,
+  writeBatch,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { todayKey } from './dates';
 
 const COLLECTION = 'sessions';
+const MESSAGES_COLLECTION = 'messages';
 
 /** 새 세션(하나의 QR/발표 단위)을 만들고 ID를 반환한다. */
 export async function createSession(name) {
@@ -81,4 +84,15 @@ export function clearQuestion(sessionId) {
     questionText: null,
     questionAt: null,
   });
+}
+
+/** 세션과 그 세션에 달린 글(답글 포함)을 모두 삭제한다. */
+export async function deleteSession(sessionId) {
+  const snap = await getDocs(
+    query(collection(db, MESSAGES_COLLECTION), where('sessionId', '==', sessionId)),
+  );
+  const batch = writeBatch(db);
+  for (const d of snap.docs) batch.delete(d.ref);
+  batch.delete(doc(db, COLLECTION, sessionId));
+  await batch.commit();
 }

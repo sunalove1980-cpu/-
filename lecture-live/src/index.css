@@ -126,6 +126,19 @@ input, textarea { font: inherit; color: inherit; }
 .home-row-desc { font-size: 0.83rem; color: var(--ink-soft); }
 .home-row-chevron { color: var(--ink-faint); }
 
+.home-row-delete {
+  display: inline-flex;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: none;
+  color: var(--ink-faint);
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s, background 0.15s;
+}
+.home-row:hover .home-row-delete { opacity: 1; }
+.home-row-delete:hover { color: var(--danger); background: var(--danger-soft); }
+
 .spin { animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -552,6 +565,8 @@ input, textarea { font: inherit; color: inherit; }
   font-size: 0.85rem;
 }
 .archive-actions button:hover { border-color: var(--border-strong); background: var(--bg); }
+.archive-actions .archive-delete { color: var(--danger); }
+.archive-actions .archive-delete:hover { border-color: #fca5a5; background: var(--danger-soft); }
 
 /* ── 설정 안내 ───────────────────────────────────────── */
 .setup {

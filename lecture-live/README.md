@@ -39,8 +39,7 @@
      service cloud.firestore {
        match /databases/{database}/documents {
          match /sessions/{id} {
-           allow read, create, update: if true;
-           allow delete: if false;
+           allow read, create, update, delete: if true;
          }
          match /messages/{id} {
            allow read, create, update, delete: if true;
