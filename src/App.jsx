@@ -5,6 +5,7 @@ import ChatDock from './components/ChatDock.jsx';
 import ChatLog from './components/ChatLog.jsx';
 import { useWander } from './hooks/useWander.js';
 import { useForestAmbience } from './hooks/useForestAmbience.js';
+import { useTimeOfDay } from './hooks/useTimeOfDay.js';
 import { askForest, isGeminiConfigured } from './services/geminiService.js';
 import { MODES, pickReaction } from './data/persona.js';
 import './App.css';
@@ -41,6 +42,7 @@ export default function App() {
 
   const { pos, facing, freeze } = useWander(sceneRef, { speed: 50 });
   const { enabled: soundOn, toggle: toggleSound } = useForestAmbience();
+  const timeOfDay = useTimeOfDay();
 
   useEffect(() => {
     try {
@@ -126,6 +128,7 @@ export default function App() {
         thinking={thinking}
         expression={expression}
         mode={mode}
+        timeOfDay={timeOfDay}
         onTouchCharacter={handleTouchCharacter}
         bubbleText={bubble.text}
         bubbleVisible={bubble.visible}
