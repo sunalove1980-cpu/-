@@ -50,7 +50,11 @@ export async function askForest({ history, userText, mode }) {
         contents,
         generationConfig: {
           temperature: mode === 'T' ? 0.6 : 0.8,
-          maxOutputTokens: 200,
+          // gemini-3.x는 "생각(thinking)" 토큰도 maxOutputTokens 예산을 함께 쓰기 때문에
+          // 너무 낮게 잡으면 답변이 나오기도 전에 잘려버린다 (thinkingLevel: low로 최소화해도
+          // 페르소나 지시가 복잡하면 여전히 수백 토큰을 씀). 넉넉하게 잡아서 항상 끝까지 나오게 한다.
+          maxOutputTokens: 1024,
+          thinkingConfig: { thinkingLevel: 'low' },
         },
       }),
     });
@@ -58,8 +62,13 @@ export async function askForest({ history, userText, mode }) {
     if (!res.ok) throw new Error(`Gemini API 오류: ${res.status}`);
 
     const data = await res.json();
-    const text = data?.candidates?.[0]?.content?.parts?.map((p) => p.text).join('') ?? '';
-    if (!text.trim()) throw new Error('Gemini 응답이 비어있음');
+    const candidate = data?.candidates?.[0];
+    const text = candidate?.content?.parts?.map((p) => p.text).join('') ?? '';
+    // 생각(thinking) 토큰이 예산을 다 써버려 답변이 시작하기도 전에 잘린 경우 —
+    // 어색하게 끊긴 문장을 보여주느니 내장 대사로 대체한다.
+    if (!text.trim() || (candidate?.finishReason === 'MAX_TOKENS' && text.trim().length < 10)) {
+      throw new Error('Gemini 응답이 비어있거나 너무 일찍 잘림');
+    }
 
     return { text: text.trim(), source: 'gemini' };
   } catch (err) {
