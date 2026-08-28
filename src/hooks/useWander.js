@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // - 매 프레임 목표 지점을 향해 일정 속도로 이동하고, 도착하면 잠깐 쉬었다가 새 목표를 고른다.
 // - freeze(ms) 를 호출하면 그 시간 동안 이동을 멈춘다 (터치 반응 애니메이션 중 등).
 
-export const CHAR_SIZE = 104; // px — Character.css 의 크기와 맞춰야 함
+export const CHAR_SIZE = 115; // px — Character.css 의 크기(가로/세로 중 큰 쪽)와 맞춰야 함
 
 export function useWander(containerRef, { speed = 55, minPause = 900, maxPause = 2600 } = {}) {
   const [pos, setPos] = useState({ x: 40, y: 60 });

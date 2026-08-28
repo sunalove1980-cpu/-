@@ -9,10 +9,14 @@ React + Vite로 만들었고, Gemini API를 붙여서 실제 AI 답변을 받을
 
 ## 주요 기능
 
-- 화면 안을 계속 돌아다니는 캐릭터 (랜덤 목적지로 걷다가 쉬었다가 반복)
+- 화면 안을 계속 돌아다니는 통통하고 귀여운 캐릭터 (랜덤 목적지로 걷다가 쉬었다가 반복)
+- 표정 변화: 평소(idle) / 터치하면 놀람(surprised) / 생각 중(thinking) / 답변 후 F모드는
+  활짝 웃는 표정(happy), T모드는 씩 웃는 표정(smug)으로 자동 전환
 - 캐릭터를 터치/클릭하면 놀라는 리액션 애니메이션 + 짧은 대사
 - **F 모드**: 먼저 감정을 알아주고, 부담스럽지 않은 선에서 담백하게 공감 + 작은 제안
 - **T 모드**: 공감 생략, 원인 분석과 실행 가능한 해결책 위주의 직설적인 "쌉T" 답변
+- 상단의 스피커 버튼을 누르면 숲 배경음(바람 소리 + 가끔 들리는 새소리)이 재생됨 —
+  외부 음원 파일 없이 Web Audio API로 그때그때 만들어낸 소리라 용량이 들지 않음
 - Gemini API 연동 (`VITE_GEMINI_API_KEY` 설정 시 실제 AI 응답, 없으면 내장 대사로 자동 대체)
 - 하단 채팅창 + 대화 기록 전체 보기 패널
 
@@ -113,10 +117,12 @@ src/
 ├─ data/persona.js         # F/T 모드 시스템 프롬프트, 반응 대사, 내장(fallback) 대사 뱅크
 ├─ services/geminiService.js  # Gemini API 호출 + 실패 시 대체 응답 처리
 ├─ hooks/useWander.js       # 캐릭터가 화면을 스스로 돌아다니게 하는 애니메이션 로직
+├─ hooks/useForestAmbience.js  # Web Audio API로 바람/새소리를 합성하는 숲 배경음 훅
 ├─ components/
-│  ├─ TopBar.jsx           # 타이틀 + F/T 모드 선택 토글
+│  ├─ TopBar.jsx           # 타이틀 + 숲 소리 버튼 + F/T 모드 선택 토글
 │  ├─ ForestScene.jsx       # 숲 배경 + 캐릭터 + 말풍선을 담는 무대
 │  ├─ Character.jsx         # SVG 캐릭터, 걷기/터치 반응 애니메이션
+│  ├─ characterExpressions.jsx  # 표정별(눈/입/눈썹) SVG 파츠 모음
 │  ├─ SpeechBubble.jsx       # 캐릭터 위에 뜨는 말풍선
 │  ├─ ChatDock.jsx           # 하단 입력창
 │  └─ ChatLog.jsx            # 대화 기록 전체보기 패널

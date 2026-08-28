@@ -4,7 +4,17 @@ import SpeechBubble from './SpeechBubble.jsx';
 import './ForestScene.css';
 
 const ForestScene = forwardRef(function ForestScene(
-  { charPos, facing, reacting, thinking, mode, onTouchCharacter, bubbleText, bubbleVisible },
+  {
+    charPos,
+    facing,
+    reacting,
+    thinking,
+    expression,
+    mode,
+    onTouchCharacter,
+    bubbleText,
+    bubbleVisible,
+  },
   ref,
 ) {
   return (
@@ -18,7 +28,7 @@ const ForestScene = forwardRef(function ForestScene(
 
       <SpeechBubble
         x={Math.min(charPos.x - 40, 999)}
-        y={charPos.y - 74}
+        y={charPos.y - 84}
         text={bubbleText}
         visible={bubbleVisible}
         mode={mode}
@@ -30,6 +40,7 @@ const ForestScene = forwardRef(function ForestScene(
         facing={facing}
         reacting={reacting}
         thinking={thinking}
+        expression={expression}
         mode={mode}
         onTouch={onTouchCharacter}
       />
