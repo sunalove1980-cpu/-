@@ -1,0 +1,102 @@
+.character {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 104px;
+  height: 104px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  filter: drop-shadow(0 6px 8px rgba(30, 50, 20, 0.18));
+  will-change: transform;
+  transition: filter 0.2s ease;
+}
+
+.character:active {
+  filter: drop-shadow(0 3px 5px rgba(30, 50, 20, 0.22));
+}
+
+.character__svg {
+  animation: character-bob 2.4s ease-in-out infinite;
+  transform-origin: 60px 100px;
+}
+
+.character--thinking .character__svg {
+  animation-duration: 0.9s;
+}
+
+.character--reacting .character__svg {
+  animation: character-jump 0.6s ease-in-out;
+}
+
+.character__shadow {
+  fill: rgba(30, 50, 20, 0.18);
+}
+
+.character__ear {
+  transform-origin: 60px 34px;
+  animation: ear-wiggle 3.6s ease-in-out infinite;
+}
+.character__ear--right {
+  animation-delay: 0.2s;
+}
+
+.character--reacting .character__ear {
+  animation: ear-flap 0.4s ease-in-out 2;
+}
+
+.character__thought {
+  position: absolute;
+  top: -6px;
+  right: 6px;
+  display: flex;
+  gap: 3px;
+  background: #fff;
+  border-radius: 999px;
+  padding: 5px 8px;
+  box-shadow: 0 2px 6px rgba(30, 50, 20, 0.2);
+}
+.character__thought .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #8a7a68;
+  animation: think-blink 1s ease-in-out infinite;
+}
+.character__thought .dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.character__thought .dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes character-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(-1.5deg); }
+}
+
+@keyframes character-jump {
+  0% { transform: translateY(0) scale(1) rotate(0deg); }
+  30% { transform: translateY(-22px) scale(1.05, 0.95) rotate(-8deg); }
+  55% { transform: translateY(-4px) scale(0.97, 1.03) rotate(6deg); }
+  75% { transform: translateY(-10px) rotate(-3deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+
+@keyframes ear-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(4deg); }
+}
+
+@keyframes ear-flap {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(18deg); }
+}
+
+@keyframes think-blink {
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-2px); }
+}

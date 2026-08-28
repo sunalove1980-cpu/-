@@ -1,0 +1,89 @@
+.top-bar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: max(14px, env(safe-area-inset-top)) 16px 10px;
+}
+
+.top-bar__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.top-bar__logo {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
+}
+
+.top-bar__title h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #2f4a2e;
+}
+
+.top-bar__title p {
+  margin: 2px 0 0;
+  font-size: 0.72rem;
+  color: #5a7452;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.top-bar__badge {
+  font-size: 0.62rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #e4e9dc;
+  color: #6b7a5f;
+}
+.top-bar__badge.is-on {
+  background: #d7f0d4;
+  color: #2f7a3f;
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 4px;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(30, 50, 20, 0.12);
+  backdrop-filter: blur(4px);
+}
+
+.mode-toggle__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.15;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+  color: #6b7a5f;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.mode-toggle__btn strong {
+  font-size: 0.82rem;
+}
+.mode-toggle__btn span {
+  font-size: 0.62rem;
+  opacity: 0.85;
+}
+
+.mode-toggle__btn.is-active {
+  background: var(--accent, #5b8c5a);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.mode-toggle__btn:active {
+  transform: scale(0.96);
+}

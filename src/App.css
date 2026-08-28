@@ -1,0 +1,8 @@
+.app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: #bfe6bd;
+  overflow: hidden;
+}
