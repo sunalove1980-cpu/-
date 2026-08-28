@@ -1,5 +1,7 @@
 # 숲속 상담소 (Forest Counselor)
 
+🔗 **배포된 주소**: https://forest-counselor.netlify.app
+
 숲속에 사는 귀여운 여우 캐릭터 "포리"에게 고민을 털어놓는 웹앱입니다.
 캐릭터는 화면 안을 스스로 어슬렁거리며 돌아다니고, 터치하면 반응하며,
 채팅으로 고민을 적으면 F(공감형) / T(팩폭형) 모드에 맞춰 대답합니다.
@@ -89,11 +91,20 @@ GitHub Pages에 배포합니다.
 3. **Actions** 탭에서 "Deploy to GitHub Pages" 워크플로가 실행되는지 확인합니다.
 4. 완료되면 `https://내계정.github.io/저장소이름/` 주소로 접속할 수 있습니다.
 
-### Vercel / Netlify
+### Netlify (현재 배포 중인 방식)
 
-[vercel.com](https://vercel.com) 또는 [netlify.com](https://netlify.com)에서 이 저장소를
-연결하면 Vite 프로젝트로 자동 인식됩니다 (Build: `npm run build`, Output: `dist`).
-환경 변수 설정 화면에서 `VITE_GEMINI_API_KEY`를 추가하면 배포본에서도 Gemini가 동작합니다.
+이 프로젝트는 Netlify에 `forest-counselor`라는 이름으로 배포되어 있습니다
+(https://forest-counselor.netlify.app). 저장소 루트의 `netlify.toml`이 빌드 명령(`npm run
+build`)과 배포 폴더(`dist`)를 지정합니다. Netlify 대시보드의 **Site settings → Environment
+variables**에서 `VITE_GEMINI_API_KEY`를 추가하면 배포본에서도 실제 Gemini 응답을 받을 수
+있습니다 (안 넣으면 내장 대사로 동작).
+
+### Vercel
+
+[vercel.com](https://vercel.com)에서 이 GitHub 저장소를 Import하면 Vite 프로젝트로 자동
+인식됩니다 (Build: `npm run build`, Output: `dist`). "Environment Variables" 단계에서
+`VITE_GEMINI_API_KEY`를 추가하면 배포본에서도 Gemini가 동작합니다. Deploy를 누르면 몇 분 안에
+`https://프로젝트이름.vercel.app` 주소가 생성됩니다.
 
 ## 프로젝트 구조
 

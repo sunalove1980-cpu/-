@@ -17,6 +17,9 @@ dist-ssr
 .env.*
 !.env.example
 
+# Netlify CLI 로컬 설정 캐시
+.netlify
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
