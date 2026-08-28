@@ -11,7 +11,7 @@
 import { SYSTEM_PROMPTS, pickFallbackReply } from '../data/persona.js';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const MODEL = import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.5-flash';
+const MODEL = import.meta.env.VITE_GEMINI_MODEL || 'gemini-3.6-flash';
 const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
 // 가짜 "생각 중" 지연 시간 (fallback 모드일 때 너무 즉답하면 어색해서 살짝 텀을 준다)

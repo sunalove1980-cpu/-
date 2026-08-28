@@ -63,7 +63,7 @@ API 키가 없어도 앱은 정상 작동합니다 (내장된 대사 뱅크로 �
    ```
 
 4. 개발 서버를 다시 시작하면 (`npm run dev`) 상단바에 "Gemini 연결됨" 배지가 뜨고,
-   채팅 답변이 실제 Gemini 모델(`gemini-2.5-flash`, `VITE_GEMINI_MODEL`로 변경 가능)에서
+   채팅 답변이 실제 Gemini 모델(`gemini-3.6-flash`, `VITE_GEMINI_MODEL`로 변경 가능)에서
    생성됩니다. API 호출이 실패하면 자동으로 내장 대사로 대체되어 앱이 멈추지 않습니다.
 
 F/T 모드별 시스템 프롬프트와 내장 대사는 `src/data/persona.js`에서,
