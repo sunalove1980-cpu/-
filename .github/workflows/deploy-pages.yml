@@ -27,9 +27,6 @@ jobs:
       - run: npm run build
         env:
           DEPLOY_TARGET: gh-pages
-          # 저장소 Settings → Secrets and variables → Actions 에 VITE_GEMINI_API_KEY 를
-          # 등록해두면 배포된 사이트에서도 Gemini 응답이 사용된다. 비워두면 내장 대사로 동작한다.
-          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
       - uses: actions/configure-pages@v5
         with:
           # 저장소에 Pages가 아직 활성화되어 있지 않으면 이 액션이 자동으로 활성화한다.

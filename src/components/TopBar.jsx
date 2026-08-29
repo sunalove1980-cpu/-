@@ -1,19 +1,14 @@
 import { MODE_META, MODES } from '../data/persona.js';
 import './TopBar.css';
 
-export default function TopBar({ mode, onChangeMode, geminiConnected, soundOn, onToggleSound }) {
+export default function TopBar({ mode, onChangeMode, soundOn, onToggleSound }) {
   return (
     <header className="top-bar">
       <div className="top-bar__title">
         <span className="top-bar__logo">🌲</span>
         <div>
-          <h1>숲속 상담소</h1>
-          <p>
-            포리에게 고민을 털어놔봐
-            <span className={`top-bar__badge ${geminiConnected ? 'is-on' : ''}`}>
-              {geminiConnected ? 'Gemini 연결됨' : '체험 모드'}
-            </span>
-          </p>
+          <h1>숲속 브레이크타임</h1>
+          <p>포리랑 잠깐 쉬어가기</p>
         </div>
       </div>
 
@@ -28,7 +23,7 @@ export default function TopBar({ mode, onChangeMode, geminiConnected, soundOn, o
         {soundOn ? '🔊' : '🔇'}
       </button>
 
-      <div className="mode-toggle" role="group" aria-label="상담 모드 선택">
+      <div className="mode-toggle" role="group" aria-label="캐릭터 성격 선택">
         {Object.values(MODES).map((m) => {
           const meta = MODE_META[m];
           const active = mode === m;

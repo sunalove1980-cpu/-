@@ -1,0 +1,67 @@
+.icebreaker-draw {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.icebreaker-draw__categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.icebreaker-draw__chip {
+  border: 1px solid rgba(70, 110, 60, 0.2);
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  color: #4a5a42;
+  cursor: pointer;
+}
+.icebreaker-draw__chip.is-active {
+  background: #5b8bd8;
+  border-color: #5b8bd8;
+  color: #fff;
+}
+
+.icebreaker-draw__card {
+  min-height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef3f8;
+  border-radius: 18px;
+  padding: 24px 20px;
+  text-align: center;
+  opacity: 1;
+  transform: scale(1) rotateX(0deg);
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+.icebreaker-draw__card.is-drawing {
+  opacity: 0.25;
+  transform: scale(0.92) rotateX(30deg);
+}
+.icebreaker-draw__card p {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #2f3a4a;
+  line-height: 1.5;
+}
+.icebreaker-draw__placeholder {
+  font-size: 0.9rem !important;
+  font-weight: 400 !important;
+  color: #8a9aac !important;
+}
+
+.icebreaker-draw__draw-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 13px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  background: #5b8bd8;
+  cursor: pointer;
+}

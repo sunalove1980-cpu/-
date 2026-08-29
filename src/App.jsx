@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import TopBar from './components/TopBar.jsx';
 import ForestScene from './components/ForestScene.jsx';
-import ChatDock from './components/ChatDock.jsx';
-import ChatLog from './components/ChatLog.jsx';
+import ActionBar from './components/ActionBar.jsx';
+import BottomSheet from './components/BottomSheet.jsx';
+import LunchRoulette from './components/LunchRoulette.jsx';
+import IcebreakerDraw from './components/IcebreakerDraw.jsx';
 import { useWander } from './hooks/useWander.js';
 import { useForestAmbience } from './hooks/useForestAmbience.js';
 import { useTimeOfDay } from './hooks/useTimeOfDay.js';
-import { askForest, isGeminiConfigured } from './services/geminiService.js';
-import { MODES, pickReaction } from './data/persona.js';
+import { MODES, pickReaction, pickLine } from './data/persona.js';
+import { LUNCH_LINES } from './data/lunch.js';
+import { ICEBREAKER_LINES } from './data/icebreakers.js';
 import './App.css';
 
 const HAPPY_EXPRESSION = { F: 'happy', T: 'smug' };
@@ -23,16 +26,11 @@ function loadStoredMode() {
   }
 }
 
-let uid = 0;
-const nextId = () => `m${Date.now()}-${uid++}`;
-
 export default function App() {
   const [mode, setMode] = useState(loadStoredMode);
-  const [messages, setMessages] = useState([]);
-  const [thinking, setThinking] = useState(false);
   const [reacting, setReacting] = useState(false);
   const [expression, setExpression] = useState('idle');
-  const [logOpen, setLogOpen] = useState(false);
+  const [sheet, setSheet] = useState(null); // 'lunch' | 'icebreaker' | null
   const [bubble, setBubble] = useState({ text: '', visible: false });
 
   const sceneRef = useRef(null);
@@ -52,7 +50,7 @@ export default function App() {
     }
   }, [mode]);
 
-  const showBubble = useCallback((text, ms = 4200) => {
+  const showBubble = useCallback((text, ms = 3200) => {
     clearTimeout(bubbleTimerRef.current);
     setBubble({ text, visible: true });
     bubbleTimerRef.current = setTimeout(() => {
@@ -60,7 +58,7 @@ export default function App() {
     }, ms);
   }, []);
 
-  // 표정을 잠깐 바꿨다가(reset 없으면 계속 유지) 일정 시간 뒤 idle로 되돌린다.
+  // 표정을 잠깐 바꿨다가 일정 시간 뒤 idle로 되돌린다.
   const flashExpression = useCallback((next, ms) => {
     clearTimeout(expressionTimerRef.current);
     setExpression(next);
@@ -70,14 +68,13 @@ export default function App() {
   }, []);
 
   const handleTouchCharacter = useCallback(() => {
-    if (thinking) return;
     clearTimeout(reactTimerRef.current);
     freeze(1100);
     setReacting(true);
     flashExpression('surprised', 1400);
     showBubble(pickReaction(mode), 2400);
     reactTimerRef.current = setTimeout(() => setReacting(false), 650);
-  }, [flashExpression, freeze, mode, showBubble, thinking]);
+  }, [flashExpression, freeze, mode, showBubble]);
 
   useEffect(() => () => {
     clearTimeout(bubbleTimerRef.current);
@@ -85,47 +82,47 @@ export default function App() {
     clearTimeout(expressionTimerRef.current);
   }, []);
 
-  const handleSend = useCallback(
-    async (text) => {
-      const userMsg = { id: nextId(), role: 'user', text };
-      setMessages((prev) => [...prev, userMsg]);
-      setThinking(true);
-      flashExpression('thinking');
-      freeze(60000); // 답변 오는 동안은 제자리에서 생각하는 모션만
+  const openLunch = useCallback(() => {
+    setSheet('lunch');
+    freeze(30000);
+    showBubble(pickLine(LUNCH_LINES.intro, mode), 2600);
+  }, [freeze, mode, showBubble]);
 
-      const history = messages.map((m) => ({ role: m.role, text: m.text }));
+  const openIcebreaker = useCallback(() => {
+    setSheet('icebreaker');
+    freeze(30000);
+    showBubble(pickLine(ICEBREAKER_LINES.intro, mode), 2600);
+  }, [freeze, mode, showBubble]);
 
-      try {
-        const { text: replyText } = await askForest({ history, userText: text, mode });
-        const assistantMsg = { id: nextId(), role: 'assistant', text: replyText };
-        setMessages((prev) => [...prev, assistantMsg]);
-        const bubbleMs = Math.min(3600 + replyText.length * 60, 8000);
-        showBubble(replyText, bubbleMs);
-        flashExpression(HAPPY_EXPRESSION[mode] ?? 'happy', bubbleMs);
-      } finally {
-        setThinking(false);
-        freeze(0);
-      }
-    },
-    [flashExpression, freeze, messages, mode, showBubble],
-  );
+  const closeSheet = useCallback(() => {
+    setSheet(null);
+    freeze(0);
+  }, [freeze]);
+
+  const handlePickStart = useCallback(() => {
+    flashExpression('thinking');
+  }, [flashExpression]);
+
+  const handleLunchResult = useCallback(() => {
+    flashExpression(HAPPY_EXPRESSION[mode] ?? 'happy', 2600);
+    showBubble(pickLine(LUNCH_LINES.result, mode), 2600);
+  }, [flashExpression, mode, showBubble]);
+
+  const handleIcebreakerResult = useCallback(() => {
+    flashExpression(HAPPY_EXPRESSION[mode] ?? 'happy', 2600);
+    showBubble(pickLine(ICEBREAKER_LINES.result, mode), 2600);
+  }, [flashExpression, mode, showBubble]);
 
   return (
     <div className="app">
-      <TopBar
-        mode={mode}
-        onChangeMode={setMode}
-        geminiConnected={isGeminiConfigured}
-        soundOn={soundOn}
-        onToggleSound={toggleSound}
-      />
+      <TopBar mode={mode} onChangeMode={setMode} soundOn={soundOn} onToggleSound={toggleSound} />
 
       <ForestScene
         ref={sceneRef}
         charPos={pos}
         facing={facing}
         reacting={reacting}
-        thinking={thinking}
+        thinking={expression === 'thinking'}
         expression={expression}
         mode={mode}
         timeOfDay={timeOfDay}
@@ -134,15 +131,15 @@ export default function App() {
         bubbleVisible={bubble.visible}
       />
 
-      <ChatDock
-        mode={mode}
-        thinking={thinking}
-        onSend={handleSend}
-        onOpenLog={() => setLogOpen(true)}
-        messageCount={messages.length}
-      />
+      <ActionBar onOpenLunch={openLunch} onOpenIcebreaker={openIcebreaker} />
 
-      <ChatLog open={logOpen} messages={messages} onClose={() => setLogOpen(false)} />
+      <BottomSheet open={sheet === 'lunch'} title="🍱 점심 룰렛" onClose={closeSheet}>
+        <LunchRoulette onStart={handlePickStart} onResult={handleLunchResult} />
+      </BottomSheet>
+
+      <BottomSheet open={sheet === 'icebreaker'} title="💬 아이스브레이커" onClose={closeSheet}>
+        <IcebreakerDraw onStart={handlePickStart} onResult={handleIcebreakerResult} />
+      </BottomSheet>
     </div>
   );
 }

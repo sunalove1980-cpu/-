@@ -1,0 +1,56 @@
+.action-bar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  /* 배포 플랫폼이 화면 하단에 자체 배지/위젯을 띄우는 경우가 있어(예: 배포 정보 배지),
+     버튼이 그 아래 깔리지 않도록 하단 여백을 넉넉히 확보한다. */
+  padding-bottom: max(56px, calc(env(safe-area-inset-bottom) + 46px));
+  background: rgba(255, 253, 248, 0.92);
+  border-top: 1px solid rgba(70, 110, 60, 0.12);
+  backdrop-filter: blur(6px);
+}
+
+.action-bar__btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  border-radius: 16px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  color: #fff;
+  transition: transform 0.1s ease, filter 0.15s ease;
+}
+.action-bar__btn:active {
+  transform: scale(0.97);
+  filter: brightness(0.95);
+}
+
+.action-bar__btn--lunch {
+  background: linear-gradient(135deg, #6fae6c, #5b8c5a);
+}
+.action-bar__btn--icebreaker {
+  background: linear-gradient(135deg, #6f9bd8, #5b8bd8);
+}
+
+.action-bar__emoji {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.action-bar__btn span:last-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.action-bar__btn strong {
+  font-size: 0.92rem;
+}
+.action-bar__btn small {
+  font-size: 0.72rem;
+  opacity: 0.9;
+}
