@@ -70,7 +70,15 @@ function FeedItem({ message, sessionId, name, replies, onReply }) {
   const [replying, setReplying] = useState(false);
 
   const submitReply = async (text) => {
-    await onReply({ sessionId, questionId: message.questionId, parentId: message.id, name, text });
+    await onReply({
+      sessionId,
+      questionId: message.questionId,
+      questionType: message.questionType ?? null,
+      questionText: message.questionText ?? null,
+      parentId: message.id,
+      name,
+      text,
+    });
     setReplying(false);
   };
 
@@ -138,6 +146,7 @@ export default function WritePage({ sessionId }) {
   const { top, repliesByParent } = useMemo(() => buildThread(messages), [messages]);
 
   const activeQuestionId = session?.questionId ?? null;
+  const isWordcloud = session?.questionType === 'wordcloud';
   const feedTop = activeQuestionId
     ? top.filter((m) => m.questionId === activeQuestionId)
     : top.filter((m) => !m.questionId);
@@ -150,7 +159,14 @@ export default function WritePage({ sessionId }) {
     setError(null);
     try {
       localStorage.setItem(NAME_KEY, name.trim());
-      await postMessage({ sessionId, questionId: activeQuestionId, name, text: trimmed });
+      await postMessage({
+        sessionId,
+        questionId: activeQuestionId,
+        questionType: activeQuestionId ? session.questionType ?? 'open' : null,
+        questionText: activeQuestionId ? session.questionText ?? null : null,
+        name,
+        text: trimmed,
+      });
       setText('');
       setSent(true);
       setTimeout(() => setSent(false), 2000);
@@ -186,7 +202,7 @@ export default function WritePage({ sessionId }) {
 
       {activeQuestionId && (
         <div className="qa-banner">
-          <span className="qa-label">진행자의 질문</span>
+          <span className="qa-label">{isWordcloud ? '워드클라우드' : '진행자의 질문'}</span>
           <p className="qa-question-mobile">{session.questionText}</p>
         </div>
       )}
@@ -204,18 +220,31 @@ export default function WritePage({ sessionId }) {
         />
 
         <label className="write-label" htmlFor="text">{activeQuestionId ? '답변' : '하고 싶은 말'}</label>
-        <textarea
-          id="text"
-          ref={textRef}
-          className="write-textarea"
-          value={text}
-          maxLength={MAX_LEN}
-          rows={4}
-          placeholder={activeQuestionId ? '질문에 대한 답을 적어주세요' : '질문, 소감, 한 줄 생각 등 자유롭게 적어주세요'}
-          onChange={(e) => setText(e.target.value)}
-        />
+        {isWordcloud ? (
+          <input
+            id="text"
+            ref={textRef}
+            className="write-input"
+            type="text"
+            value={text}
+            maxLength={40}
+            placeholder="한 단어 또는 짧은 문구로 답해주세요"
+            onChange={(e) => setText(e.target.value)}
+          />
+        ) : (
+          <textarea
+            id="text"
+            ref={textRef}
+            className="write-textarea"
+            value={text}
+            maxLength={MAX_LEN}
+            rows={4}
+            placeholder={activeQuestionId ? '질문에 대한 답을 적어주세요' : '질문, 소감, 한 줄 생각 등 자유롭게 적어주세요'}
+            onChange={(e) => setText(e.target.value)}
+          />
+        )}
         <div className="write-meta">
-          <span>{text.length} / {MAX_LEN}</span>
+          <span>{text.length} / {isWordcloud ? 40 : MAX_LEN}</span>
           {sent && (
             <span className="write-sent">
               <CheckCircle2 size={14} strokeWidth={2} /> 화면에 표시됐어요

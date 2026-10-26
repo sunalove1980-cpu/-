@@ -232,9 +232,10 @@ input, textarea { font: inherit; color: inherit; }
 /* ── 질문 모드 ───────────────────────────────────────── */
 .qa-panel { margin-bottom: 20px; }
 
-.qa-ask { display: flex; gap: 8px; }
-.qa-ask .write-input { flex: 1; background: var(--surface); }
-.qa-ask button {
+.qa-ask { display: grid; gap: 10px; }
+.qa-ask-row { display: flex; gap: 8px; }
+.qa-ask-row .write-input { flex: 1; background: var(--surface); }
+.qa-ask-row button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -247,8 +248,24 @@ input, textarea { font: inherit; color: inherit; }
   font-weight: 700;
   font-size: 0.88rem;
 }
-.qa-ask button:hover:not(:disabled) { background: var(--accent-hover); }
-.qa-ask button:disabled { opacity: 0.5; cursor: default; }
+.qa-ask-row button:hover:not(:disabled) { background: var(--accent-hover); }
+.qa-ask-row button:disabled { opacity: 0.5; cursor: default; }
+
+.qa-type-toggle { display: inline-flex; gap: 4px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 3px; width: fit-content; }
+.qa-type-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  border-radius: 5px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.qa-type-btn.active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+.qa-type-btn:hover:not(.active) { color: var(--ink); }
 
 .qa-active {
   background: var(--accent-soft);
@@ -258,7 +275,9 @@ input, textarea { font: inherit; color: inherit; }
   text-align: center;
 }
 .qa-label {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -290,6 +309,17 @@ input, textarea { font: inherit; color: inherit; }
   text-align: center;
 }
 .qa-question-mobile { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; margin-top: 6px; line-height: 1.4; }
+
+.wordcloud {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px 18px;
+  padding: 32px 16px;
+}
+.wordcloud-item { color: var(--ink); line-height: 1.2; letter-spacing: -0.01em; white-space: nowrap; }
 
 .msg-foot { display: flex; gap: 12px; margin-top: 8px; }
 .msg-metric {
@@ -529,6 +559,21 @@ input, textarea { font: inherit; color: inherit; }
   letter-spacing: 0.03em;
   margin-bottom: 4px;
 }
+
+.archive-wordclouds { display: grid; gap: 12px; margin-bottom: 20px; }
+.archive-wordcloud-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 8px 16px;
+}
+.archive-wordcloud-q {
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-align: center;
+  padding-top: 10px;
+}
+.archive-wordcloud-card .wordcloud { padding: 10px 12px 20px; }
 
 .date-btn {
   text-align: left;

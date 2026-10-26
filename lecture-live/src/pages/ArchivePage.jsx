@@ -4,6 +4,7 @@ import { buildThread, fetchAllGroupedBySession } from '../lib/messages';
 import { deleteSession, fetchAllSessions } from '../lib/sessions';
 import { formatDateKey, formatTime } from '../lib/dates';
 import { colorForName } from '../lib/colors';
+import WordCloud from '../components/WordCloud';
 
 // 지난 기록: 세션 목록(날짜별로 묶어 표시)에서 하나를 골라 글을 모아보고,
 // TXT/CSV 파일로 내려받는다.
@@ -37,6 +38,17 @@ export default function ArchivePage() {
   const messages = (selected && bySession?.get(selected)) || [];
   const { top, repliesByParent } = useMemo(() => buildThread(messages), [messages]);
 
+  // 워드클라우드로 진행됐던 질문들을 모아, 질문별로 미리보기 단어구름을 보여준다.
+  const wordcloudGroups = useMemo(() => {
+    const byQuestion = new Map(); // questionId -> { text, messages[] }
+    for (const m of top) {
+      if (m.questionType !== 'wordcloud' || !m.questionId) continue;
+      if (!byQuestion.has(m.questionId)) byQuestion.set(m.questionId, { text: m.questionText, messages: [] });
+      byQuestion.get(m.questionId).messages.push(m);
+    }
+    return [...byQuestion.values()];
+  }, [top]);
+
   const download = (filename, content, type) => {
     const blob = new Blob([content], { type: `${type};charset=utf-8` });
     const url = URL.createObjectURL(blob);
@@ -53,7 +65,7 @@ export default function ArchivePage() {
       `총 ${top.length}개의 글`,
       '─'.repeat(40),
       ...top.flatMap((m) => [
-        `[${formatTime(m.createdAt)}] ${m.name}${m.questionId ? ' (답변)' : ''}: ${m.text}  ♥${m.likes || 0}`,
+        `[${formatTime(m.createdAt)}] ${m.name}${m.questionId ? (m.questionType === 'wordcloud' ? ' (워드클라우드)' : ' (답변)') : ''}: ${m.text}  ♥${m.likes || 0}`,
         ...(repliesByParent.get(m.id) ?? []).map(
           (r) => `    ↳ [${formatTime(r.createdAt)}] ${r.name}: ${r.text}  ♥${r.likes || 0}`,
         ),
@@ -67,7 +79,7 @@ export default function ArchivePage() {
     const rows = [
       ['시간', '이름', '유형', '내용', '좋아요'].join(','),
       ...top.flatMap((m) => [
-        [esc(formatTime(m.createdAt)), esc(m.name), esc(m.questionId ? '답변' : '글'), esc(m.text), m.likes || 0].join(','),
+        [esc(formatTime(m.createdAt)), esc(m.name), esc(m.questionId ? (m.questionType === 'wordcloud' ? '워드클라우드' : '답변') : '글'), esc(m.text), m.likes || 0].join(','),
         ...(repliesByParent.get(m.id) ?? []).map((r) =>
           [esc(formatTime(r.createdAt)), esc(r.name), esc('답글'), esc(r.text), r.likes || 0].join(','),
         ),
@@ -144,6 +156,18 @@ export default function ArchivePage() {
                     </button>
                   </div>
                 </div>
+
+                {wordcloudGroups.length > 0 && (
+                  <div className="archive-wordclouds">
+                    {wordcloudGroups.map((g, i) => (
+                      <div key={i} className="archive-wordcloud-card">
+                        <p className="archive-wordcloud-q">{g.text || '워드클라우드 질문'}</p>
+                        <WordCloud messages={g.messages} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <ul className="archive-list">
                   {top.map((m) => (
                     <li key={m.id} className="feed-item">
@@ -152,7 +176,11 @@ export default function ArchivePage() {
                         <span className="feed-name">{m.name}</span>
                         <span className="feed-time">{formatTime(m.createdAt)}</span>
                       </div>
-                      {m.questionId && <p className="archive-qtag">질문에 대한 답변</p>}
+                      {m.questionId && (
+                        <p className="archive-qtag">
+                          {m.questionType === 'wordcloud' ? '워드클라우드 답변' : '질문에 대한 답변'}
+                        </p>
+                      )}
                       <p className="feed-text">{m.text}</p>
                       <div className="feed-actions readonly">
                         <span className="msg-metric"><Heart size={13} strokeWidth={2} /> {m.likes || 0}</span>

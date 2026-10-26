@@ -19,6 +19,10 @@
   새로 생성되므로, 하루에 여러 강의·여러 번 사용해도 기록이 섞이지 않습니다.
 - **질문 모드**: 발표 화면에서 진행자가 질문을 입력하면, 그 순간부터 화면 중앙에 질문이 크게 뜨고
   참여자 화면에도 같은 질문이 표시됩니다. 참여자가 쓰는 글은 그 질문에 대한 답변으로 기록됩니다.
+  질문을 올릴 때 **"자유 응답"**과 **"워드클라우드"** 중 유형을 진행자가 직접 고를 수 있습니다.
+  - 자유 응답: 지금까지처럼 긴 글로 답변하고, 카드 형태로 쌓입니다.
+  - 워드클라우드: 참여자는 짧은 단어/문구(최대 40자)로만 답변하고, 발표 화면엔 같은 답변이
+    많을수록 크고 진하게 보이는 단어구름이 실시간으로 그려집니다.
   "질문 종료"를 누르면 다시 자유 게시판 모드로 돌아갑니다.
 - **좋아요/답글**: 참여자 화면(`#/write`)의 피드에서 다른 사람의 글에 하트를 누르거나 답글을 달 수
   있습니다. 좋아요 중복 방지는 기기별 localStorage로만 처리합니다 (로그인이 없는 앱이라 완벽하지는
@@ -73,6 +77,7 @@ npm run build    # dist/ 폴더에 배포용 파일 생성
   createdAt: 서버시각,
   questionId: string | null,    // 진행 중인 질문 ID (없으면 자유 게시판 모드)
   questionText: string | null,
+  questionType: 'open' | 'wordcloud' | null,  // 자유 응답인지 워드클라우드인지
   questionAt: 서버시각 | null,
 }
 ```
@@ -83,6 +88,8 @@ npm run build    # dist/ 폴더에 배포용 파일 생성
 {
   sessionId: string,
   questionId: string | null,    // 어떤 질문에 대한 답변인지
+  questionType: 'open' | 'wordcloud' | null,  // 제출 시점의 질문 유형 (기록용으로 복사해둠)
+  questionText: string | null,  // 제출 시점의 질문 내용
   parentId: string | null,      // 답글 대상 글 ID (없으면 최상위 글)
   name: string,
   text: string,

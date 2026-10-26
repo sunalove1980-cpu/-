@@ -2,8 +2,10 @@
 // 문서 구조:
 // {
 //   sessionId: string,
-//   questionId: string | null,  // 어떤 질문에 대한 답변인지 (없으면 자유 게시글)
-//   parentId: string | null,    // 답글 대상 글 ID (없으면 최상위 글)
+//   questionId: string | null,    // 어떤 질문에 대한 답변인지 (없으면 자유 게시글)
+//   questionType: 'open' | 'wordcloud' | null,  // 제출 시점의 질문 유형 (기록용으로 복사해둠)
+//   questionText: string | null,  // 제출 시점의 질문 내용 (세션 질문이 바뀌어도 기록은 그대로 유지)
+//   parentId: string | null,      // 답글 대상 글 ID (없으면 최상위 글)
 //   name: string,
 //   text: string,
 //   likes: number,
@@ -49,10 +51,20 @@ export function subscribeToSession(sessionId, onUpdate, onError) {
 }
 
 /** 글 작성 (자유 게시글, 질문에 대한 답변, 답글 모두 이 함수 하나로 처리) */
-export function postMessage({ sessionId, questionId = null, parentId = null, name, text }) {
+export function postMessage({
+  sessionId,
+  questionId = null,
+  questionType = null,
+  questionText = null,
+  parentId = null,
+  name,
+  text,
+}) {
   return addDoc(collection(db, COLLECTION), {
     sessionId,
     questionId,
+    questionType,
+    questionText,
     parentId,
     name: name.trim() || '익명',
     text: text.trim(),

@@ -6,6 +6,7 @@
 //   createdAt: Timestamp,
 //   questionId: string | null,  // 현재 진행 중인 질문 ID (없으면 자유 게시판 모드)
 //   questionText: string | null,
+//   questionType: 'open' | 'wordcloud' | null,  // 자유 응답인지 워드클라우드인지
 //   questionAt: Timestamp | null,
 // }
 import {
@@ -36,6 +37,7 @@ export async function createSession(name) {
     createdAt: serverTimestamp(),
     questionId: null,
     questionText: null,
+    questionType: null,
     questionAt: null,
   });
   return ref.id;
@@ -66,12 +68,13 @@ export async function fetchAllSessions() {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
-/** 새 질문을 올려 '질문 모드'를 시작한다. */
-export async function askQuestion(sessionId, text) {
+/** 새 질문을 올려 '질문 모드'를 시작한다. type은 'open'(자유 응답) 또는 'wordcloud'. */
+export async function askQuestion(sessionId, text, type = 'open') {
   const questionId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   await updateDoc(doc(db, COLLECTION, sessionId), {
     questionId,
     questionText: text.trim(),
+    questionType: type,
     questionAt: serverTimestamp(),
   });
   return questionId;
@@ -82,6 +85,7 @@ export function clearQuestion(sessionId) {
   return updateDoc(doc(db, COLLECTION, sessionId), {
     questionId: null,
     questionText: null,
+    questionType: null,
     questionAt: null,
   });
 }

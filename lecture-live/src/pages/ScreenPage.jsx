@@ -3,8 +3,10 @@ import { QRCodeSVG } from 'qrcode.react';
 import {
   Archive,
   ArrowLeft,
+  Cloud,
   Heart,
   MessageCircle,
+  MessageSquareText,
   Radio,
   Send,
   Trash2,
@@ -15,6 +17,7 @@ import { buildThread, deleteMessage, subscribeToSession } from '../lib/messages'
 import { askQuestion, clearQuestion, subscribeSession } from '../lib/sessions';
 import { formatDateKey, formatTime } from '../lib/dates';
 import { colorForName } from '../lib/colors';
+import WordCloud from '../components/WordCloud';
 
 // 발표 화면: 프로젝터에 띄워두는 페이지이자 진행자의 질문 컨트롤 화면.
 // - 질문이 없으면: 참여자가 자유롭게 올린 글이 실시간으로 쌓인다.
@@ -24,6 +27,7 @@ export default function ScreenPage({ sessionId }) {
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState(null);
   const [questionDraft, setQuestionDraft] = useState('');
+  const [questionType, setQuestionType] = useState('open');
   const [asking, setAsking] = useState(false);
   const listRef = useRef(null);
 
@@ -61,7 +65,7 @@ export default function ScreenPage({ sessionId }) {
     if (!text || asking) return;
     setAsking(true);
     try {
-      await askQuestion(sessionId, text);
+      await askQuestion(sessionId, text, questionType);
       setQuestionDraft('');
     } catch (err) {
       setError(err.message);
@@ -122,7 +126,13 @@ export default function ScreenPage({ sessionId }) {
         <div className="qa-panel">
           {session?.questionId ? (
             <div className="qa-active">
-              <span className="qa-label">진행 중인 질문</span>
+              <span className="qa-label">
+                {session.questionType === 'wordcloud' ? (
+                  <><Cloud size={12} strokeWidth={2} /> 워드클라우드</>
+                ) : (
+                  '진행 중인 질문'
+                )}
+              </span>
               <h2 className="qa-question">{session.questionText}</h2>
               <button type="button" className="qa-clear" onClick={handleClear}>
                 <X size={14} strokeWidth={2} /> 질문 종료하고 자유 게시판으로
@@ -130,17 +140,39 @@ export default function ScreenPage({ sessionId }) {
             </div>
           ) : (
             <form className="qa-ask" onSubmit={handleAsk}>
-              <input
-                className="write-input"
-                type="text"
-                value={questionDraft}
-                maxLength={200}
-                placeholder="참여자에게 물어볼 질문을 입력하세요 (예: 가장 궁금한 점은?)"
-                onChange={(e) => setQuestionDraft(e.target.value)}
-              />
-              <button type="submit" disabled={!questionDraft.trim() || asking}>
-                <Send size={15} strokeWidth={2} /> 질문 올리기
-              </button>
+              <div className="qa-type-toggle">
+                <button
+                  type="button"
+                  className={questionType === 'open' ? 'qa-type-btn active' : 'qa-type-btn'}
+                  onClick={() => setQuestionType('open')}
+                >
+                  <MessageSquareText size={14} strokeWidth={2} /> 자유 응답
+                </button>
+                <button
+                  type="button"
+                  className={questionType === 'wordcloud' ? 'qa-type-btn active' : 'qa-type-btn'}
+                  onClick={() => setQuestionType('wordcloud')}
+                >
+                  <Cloud size={14} strokeWidth={2} /> 워드클라우드
+                </button>
+              </div>
+              <div className="qa-ask-row">
+                <input
+                  className="write-input"
+                  type="text"
+                  value={questionDraft}
+                  maxLength={200}
+                  placeholder={
+                    questionType === 'wordcloud'
+                      ? '예: 오늘 강의를 한 단어로 표현한다면?'
+                      : '참여자에게 물어볼 질문을 입력하세요 (예: 가장 궁금한 점은?)'
+                  }
+                  onChange={(e) => setQuestionDraft(e.target.value)}
+                />
+                <button type="submit" disabled={!questionDraft.trim() || asking}>
+                  <Send size={15} strokeWidth={2} /> 질문 올리기
+                </button>
+              </div>
             </form>
           )}
         </div>
@@ -150,6 +182,8 @@ export default function ScreenPage({ sessionId }) {
             <Users size={40} strokeWidth={1.5} />
             <p>{session?.questionId ? '아직 답변이 없습니다' : '아직 글이 없습니다. 첫 번째 글을 기다리는 중'}</p>
           </div>
+        ) : session?.questionType === 'wordcloud' ? (
+          <WordCloud messages={visible} />
         ) : (
           <ul className="screen-grid">
             {visible.map((m) => {
