@@ -4,6 +4,8 @@ import {
   Archive,
   ArrowLeft,
   Cloud,
+  Download,
+  FileSpreadsheet,
   Heart,
   MessageCircle,
   MessageSquareText,
@@ -17,6 +19,8 @@ import { buildThread, deleteMessage, subscribeToSession } from '../lib/messages'
 import { askQuestion, clearQuestion, subscribeSession } from '../lib/sessions';
 import { formatDateKey, formatTime } from '../lib/dates';
 import { colorForName } from '../lib/colors';
+import { downloadFile } from '../lib/download';
+import { buildExportCsv, buildExportText } from '../lib/exportSession';
 import WordCloud from '../components/WordCloud';
 
 // 발표 화면: 프로젝터에 띄워두는 페이지이자 진행자의 질문 컨트롤 화면.
@@ -80,6 +84,20 @@ export default function ScreenPage({ sessionId }) {
     if (window.confirm('이 글을 삭제할까요?')) await deleteMessage(id);
   };
 
+  const sessionLabel = `${session?.name || '이름 없는 세션'} (${session ? formatDateKey(session.dateKey) : ''})`;
+
+  const handleDownloadTxt = () => {
+    downloadFile(
+      `lecture-${session?.dateKey}-${sessionId}.txt`,
+      buildExportText({ title: `강의 라이브 보드 — ${sessionLabel}`, top, repliesByParent }),
+      'text/plain',
+    );
+  };
+
+  const handleDownloadCsv = () => {
+    downloadFile(`lecture-${session?.dateKey}-${sessionId}.csv`, buildExportCsv({ top, repliesByParent }), 'text/csv');
+  };
+
   if (!sessionId) {
     return (
       <div className="screen-missing">
@@ -114,6 +132,14 @@ export default function ScreenPage({ sessionId }) {
         <div className="screen-stats">
           <MessageCircle size={16} strokeWidth={2} />
           {session?.questionId ? '답변' : '오늘의 글'} <strong>{visible.length}</strong>개
+        </div>
+        <div className="screen-downloads">
+          <button type="button" onClick={handleDownloadTxt} disabled={top.length === 0}>
+            <Download size={13} strokeWidth={2} /> TXT
+          </button>
+          <button type="button" onClick={handleDownloadCsv} disabled={top.length === 0}>
+            <FileSpreadsheet size={13} strokeWidth={2} /> CSV
+          </button>
         </div>
         <a className="screen-archive" href="#/archive">
           <Archive size={14} strokeWidth={2} /> 지난 기록

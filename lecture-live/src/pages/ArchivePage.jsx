@@ -4,6 +4,8 @@ import { buildThread, fetchAllGroupedBySession } from '../lib/messages';
 import { deleteSession, fetchAllSessions } from '../lib/sessions';
 import { formatDateKey, formatTime } from '../lib/dates';
 import { colorForName } from '../lib/colors';
+import { downloadFile } from '../lib/download';
+import { buildExportCsv, buildExportText } from '../lib/exportSession';
 import WordCloud from '../components/WordCloud';
 
 // 지난 기록: 세션 목록(날짜별로 묶어 표시)에서 하나를 골라 글을 모아보고,
@@ -49,44 +51,15 @@ export default function ArchivePage() {
     return [...byQuestion.values()];
   }, [top]);
 
-  const download = (filename, content, type) => {
-    const blob = new Blob([content], { type: `${type};charset=utf-8` });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  const download = downloadFile;
 
   const downloadTxt = () => {
-    const lines = [
-      `강의 라이브 보드 — ${currentSession?.name || '이름 없는 세션'} (${formatDateKey(currentSession.dateKey)})`,
-      `총 ${top.length}개의 글`,
-      '─'.repeat(40),
-      ...top.flatMap((m) => [
-        `[${formatTime(m.createdAt)}] ${m.name}${m.questionId ? (m.questionType === 'wordcloud' ? ' (워드클라우드)' : ' (답변)') : ''}: ${m.text}  ♥${m.likes || 0}`,
-        ...(repliesByParent.get(m.id) ?? []).map(
-          (r) => `    ↳ [${formatTime(r.createdAt)}] ${r.name}: ${r.text}  ♥${r.likes || 0}`,
-        ),
-      ]),
-    ];
-    download(`lecture-${currentSession.dateKey}-${selected}.txt`, lines.join('\n'), 'text/plain');
+    const title = `강의 라이브 보드 — ${currentSession?.name || '이름 없는 세션'} (${formatDateKey(currentSession.dateKey)})`;
+    download(`lecture-${currentSession.dateKey}-${selected}.txt`, buildExportText({ title, top, repliesByParent }), 'text/plain');
   };
 
   const downloadCsv = () => {
-    const esc = (s) => `"${String(s).replaceAll('"', '""')}"`;
-    const rows = [
-      ['시간', '이름', '유형', '내용', '좋아요'].join(','),
-      ...top.flatMap((m) => [
-        [esc(formatTime(m.createdAt)), esc(m.name), esc(m.questionId ? (m.questionType === 'wordcloud' ? '워드클라우드' : '답변') : '글'), esc(m.text), m.likes || 0].join(','),
-        ...(repliesByParent.get(m.id) ?? []).map((r) =>
-          [esc(formatTime(r.createdAt)), esc(r.name), esc('답글'), esc(r.text), r.likes || 0].join(','),
-        ),
-      ]),
-    ];
-    // 엑셀에서 한글이 깨지지 않도록 BOM을 붙인다.
-    download(`lecture-${currentSession.dateKey}-${selected}.csv`, `﻿${rows.join('\n')}`, 'text/csv');
+    download(`lecture-${currentSession.dateKey}-${selected}.csv`, buildExportCsv({ top, repliesByParent }), 'text/csv');
   };
 
   const handleDelete = async () => {

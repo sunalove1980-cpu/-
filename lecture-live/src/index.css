@@ -207,6 +207,24 @@ input, textarea { font: inherit; color: inherit; }
 }
 .screen-stats strong { color: #fff; font-size: 1.15rem; }
 
+.screen-downloads { display: flex; gap: 8px; }
+.screen-downloads button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #cbd5e1;
+  border-radius: var(--radius-sm);
+  padding: 7px 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.screen-downloads button:hover:not(:disabled) { border-color: #475569; color: #fff; }
+.screen-downloads button:disabled { opacity: 0.4; cursor: default; }
+
 .screen-archive {
   display: inline-flex;
   align-items: center;
